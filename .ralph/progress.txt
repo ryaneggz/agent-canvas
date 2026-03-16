@@ -1,0 +1,23 @@
+# Ralph Progress Log
+Started: Sun Mar 15 23:25:31 MDT 2026
+
+## Codebase Patterns
+- Port 5173 may be in use by another app; Vite will auto-increment to 5174/5175
+- All component stubs return `<div />` — implement one story at a time
+- Typecheck/lint/test commands: `npm run typecheck`, `npm run lint`, `npm test` (run from app/)
+- Inline styles only — all colors via `T` token object from `theme.ts`, no CSS variables
+---
+
+## 2026-03-15 23:26 - US-001
+- Verified project scaffold is complete with all prescribed files
+- Confirmed Vite boilerplate removed (no App.css, index.css, assets/)
+- All 16 source files present in correct directory structure
+- Only react/react-dom as runtime dependencies
+- Typecheck, lint, and tests all pass
+- Browser verified: app renders "Agent Canvas" at localhost
+- Files changed: none (scaffold was already committed)
+- **Learnings for future iterations:**
+  - The scaffold commit already created all stub files — US-001 was pre-done
+  - Port 5173 is occupied by another app on this machine; use a different port for testing
+  - The app's working directory for npm commands is `app/`, not project root
+---

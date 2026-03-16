@@ -1,8 +1,6 @@
 # Ralph working files (generated during runs)
-prd.json
-.ralph/prd.json
-progress.txt
-.ralph/progress.txt
+# progress.txt
+# .ralph/progress.txt
 .ralph/.last-branch
 
 # Archives
