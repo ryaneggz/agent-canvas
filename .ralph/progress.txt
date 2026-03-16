@@ -31,3 +31,12 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Font @import must be at the very top of global.css before any other rules
   - DM Sans for UI chrome, JetBrains Mono for terminal content (applied via inline styles on individual components)
 ---
+
+## 2026-03-15 23:29 - US-003
+- Implemented T token object in theme.ts with all 19 color keys matching spec exactly
+- All values use `as const` for type safety
+- Files changed: src/theme.ts
+- **Learnings for future iterations:**
+  - The spec says "20 keys" but actually lists 19 — follow the actual key list, not the count
+  - All colors reference T object directly via inline styles — no CSS variables allowed
+---

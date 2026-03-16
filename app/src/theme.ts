@@ -1,2 +1,21 @@
-// Design tokens — see specs/02-theme-types.md
-export const T = {} as const
+export const T = {
+  bg: "#08090c",
+  grid: "rgba(255,255,255,0.018)",
+  gridDot: "rgba(255,255,255,0.06)",
+  surface: "#0e1118",
+  surfaceHover: "#131720",
+  border: "#1a1f2e",
+  borderActive: "#2d3548",
+  accent: "#c084fc",
+  accentDim: "rgba(192,132,252,0.15)",
+  accentGlow: "rgba(192,132,252,0.25)",
+  green: "#34d399",
+  greenDim: "rgba(52,211,153,0.12)",
+  amber: "#fbbf24",
+  red: "#f87171",
+  cyan: "#22d3ee",
+  text: "#e2e8f0",
+  textDim: "#64748b",
+  textMuted: "#475569",
+  overlay: "rgba(8,9,12,0.85)",
+} as const;
