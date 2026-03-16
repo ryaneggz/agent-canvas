@@ -313,3 +313,16 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - SpawnerTemplate import from @/types needed for spawnSession test type safety
   - tilePanels offsets by canvasOffset — tests work at default offset (0,0) so grid positions are straightforward
 ---
+
+## 2026-03-16 00:35 - US-010
+- Wrote TDD tests for Canvas component in src/__tests__/Canvas.test.tsx
+- Tests verify: canvas-area renders, zoom-layer has data-canvas, pan-layer has data-canvas, 3-level nesting with correct transforms, 4 session panels rendered on mount
+- Implementation already existed from US-008 — all 5 new tests passed immediately (112 total)
+- Quality gate: typecheck, lint, test all pass
+- Files changed: src/__tests__/Canvas.test.tsx (new)
+- **Learnings for future iterations:**
+  - Canvas has 4-level nesting: viewport > canvas-area (dot grid) > zoom-layer (scale) > pan-layer (translate) > panels
+  - Navigate DOM via container.firstElementChild chains to reach nested layers
+  - Zoom-layer transform contains "scale", pan-layer contains "translate" — assert with toContain
+  - Test session panel presence by checking for session name text (api-server, git-workflow, etc.)
+---
