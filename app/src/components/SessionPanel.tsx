@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PanelState } from '../types';
 import { T } from '../theme';
+import { statusColor, shellBadge } from '../utils/lineFormatting';
 
 interface SessionPanelProps {
   panel: PanelState;
@@ -94,21 +95,78 @@ export default function SessionPanel({
           />
         </div>
 
-        {/* Session name */}
+        {/* Session info */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          {/* Status dot */}
+          <span
+            style={{
+              fontSize: 8,
+              color: statusColor(session.status),
+              flexShrink: 0,
+            }}
+          >
+            ●
+          </span>
+
+          {/* Session name */}
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: T.text,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              fontFamily: "'DM Sans', sans-serif",
+            }}
+          >
+            {session.name}
+          </span>
+
+          {/* Shell badge */}
+          {(() => {
+            const badge = shellBadge(session.shell);
+            return (
+              <span
+                style={{
+                  fontSize: 10,
+                  padding: '1px 6px',
+                  borderRadius: 4,
+                  background: badge.bg,
+                  color: badge.fg,
+                  fontWeight: 500,
+                  letterSpacing: '0.3px',
+                  flexShrink: 0,
+                  fontFamily: "'JetBrains Mono', monospace",
+                }}
+              >
+                {badge.label}
+              </span>
+            );
+          })()}
+        </div>
+
+        {/* CWD label */}
         <span
           style={{
-            fontSize: 12,
-            fontWeight: 600,
-            color: T.text,
+            fontSize: 10,
+            color: T.textMuted,
+            flexShrink: 0,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            flex: 1,
-            minWidth: 0,
-            fontFamily: "'DM Sans', sans-serif",
+            fontFamily: "'JetBrains Mono', monospace",
           }}
         >
-          {session.name}
+          {session.cwd}
         </span>
       </div>
 
