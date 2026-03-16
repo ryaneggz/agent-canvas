@@ -159,7 +159,7 @@
         "Verify in browser using agent-browser skill"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

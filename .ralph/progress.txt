@@ -126,3 +126,17 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - All actions are wired through Canvas.tsx to child components via props
   - Toolbar and SpawnerModal are still stubs — they accept props but render empty divs until their own stories (US-011, US-015)
 ---
+
+## 2026-03-15 23:50 - US-010
+- Verified Canvas.tsx already implements all acceptance criteria (done during US-008 wiring)
+- Canvas fills viewport (100vw x 100vh, overflow: hidden, background: T.bg)
+- Dot grid uses radial-gradient with T.gridDot, spacing 24*zoom px, moves with pan/zoom
+- 3-level transform nesting: canvas-area → zoom-layer (scale) → pan-layer (translate) → panels
+- zoom-layer and pan-layer carry data-canvas="true" for click-through
+- All quality checks pass: typecheck, lint, test
+- Files changed: .ralph/prd.json (mark US-010 passes: true)
+- **Learnings for future iterations:**
+  - US-010 was already fully implemented during US-008 — Canvas.tsx was built complete when wiring up pointer interactions
+  - The canvas-area div receives both mouseDown (pan) and onWheel (zoom) events
+  - Dot grid backgroundPosition uses canvasOffset * zoom to track with panning
+---
