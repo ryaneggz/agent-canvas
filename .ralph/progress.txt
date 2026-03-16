@@ -244,3 +244,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - types.ts was already implemented from pre-TDD-reset iterations — only needed verification
   - No TDD criteria for this story, so no test file needed
 ---
+
+## 2026-03-16 00:26 - US-005
+- Wrote TDD tests for helpers.ts (clamp boundary tests, uid format/uniqueness) and lineFormatting.ts (lineColor, lineIcon, statusColor, shellBadge per type)
+- Implementation already existed from prior iteration — all tests passed immediately
+- Quality gate: typecheck, lint, test all pass (46 tests)
+- Files changed: src/__tests__/helpers.test.ts (new), src/__tests__/lineFormatting.test.ts (new)
+- **Learnings for future iterations:**
+  - helpers.test.ts: 8 tests (5 clamp boundary, 3 uid checks)
+  - lineFormatting.test.ts: 15 tests (4 lineColor, 4 lineIcon, 3 statusColor, 4 shellBadge)
+  - shellBadge tests assert raw rgba strings for bg, T tokens for fg, and string labels
+  - statusColor "idle" falls through to default case returning T.textDim
+---
