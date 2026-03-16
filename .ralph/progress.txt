@@ -282,3 +282,19 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Hook returns 10 functions + 5 state values — test all return types
   - The hook uses MOCK_SESSIONS for init, so panel count matches mock data length (4)
 ---
+
+## 2026-03-16 00:31 - US-008
+- Extended src/__tests__/useCanvasInteractions.test.ts with 15 new tests for pointer interactions
+- handleWheel tests: zoom +/- 0.05 with ctrlKey/metaKey, clamp to [0.3, 2.0], no-op without modifier, preventDefault called
+- startDrag tests: stopPropagation, sets activeId, brings to front (z-index update)
+- startResize tests: stopPropagation, sets activeId, brings to front
+- startPan tests: clears activeId on canvas background click, guard prevents pan on non-canvas elements
+- Implementation already existed from prior iterations — all 91 tests pass (15 new + 76 existing)
+- Files changed: src/__tests__/useCanvasInteractions.test.ts
+- **Learnings for future iterations:**
+  - Use `as unknown as React.WheelEvent` / `React.MouseEvent` to cast mock event objects in tests
+  - handleWheel needs both ctrlKey and metaKey tested (Mac vs Windows)
+  - startPan guard checks `target !== currentTarget && !target.dataset.canvas` — test both paths
+  - Use `vi.fn()` for stopPropagation/preventDefault in mock events
+  - `act()` from @testing-library/react wraps state-changing hook calls
+---
