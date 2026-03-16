@@ -1,4 +1,4 @@
-import type { Session, SpawnerTemplate } from '../types';
+import type { Session, SpawnerTemplate } from '@/types';
 
 export const MOCK_SESSIONS: Session[] = [
   {

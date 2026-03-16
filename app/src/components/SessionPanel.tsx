@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import type { PanelState } from '../types';
-import { T } from '../theme';
-import { lineColor, lineIcon, statusColor, shellBadge } from '../utils/lineFormatting';
+import type { PanelState } from '@/types';
+import { T } from '@/theme';
+import { lineColor, lineIcon, statusColor, shellBadge } from '@/utils/lineFormatting';
 
 interface SessionPanelProps {
   panel: PanelState;

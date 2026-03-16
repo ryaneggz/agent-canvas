@@ -1,9 +1,9 @@
-import { useCanvasInteractions } from '../hooks/useCanvasInteractions';
-import { T } from '../theme';
-import SessionPanel from './SessionPanel';
-import Toolbar from './Toolbar';
-import KeyboardHints from './KeyboardHints';
-import SpawnerModal from './SpawnerModal';
+import { useCanvasInteractions } from '@/hooks/useCanvasInteractions';
+import { T } from '@/theme';
+import SessionPanel from '@/components/SessionPanel';
+import Toolbar from '@/components/Toolbar';
+import KeyboardHints from '@/components/KeyboardHints';
+import SpawnerModal from '@/components/SpawnerModal';
 
 export default function Canvas() {
   const {

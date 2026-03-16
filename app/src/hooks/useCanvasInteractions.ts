@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { PanelState, DragState, ResizeState, PanState, SpawnerTemplate } from '../types';
-import { MOCK_SESSIONS } from '../data/mockSessions';
-import { clamp, uid } from '../utils/helpers';
+import type { PanelState, DragState, ResizeState, PanState, SpawnerTemplate } from '@/types';
+import { MOCK_SESSIONS } from '@/data/mockSessions';
+import { clamp, uid } from '@/utils/helpers';
 
 function initPanels(): PanelState[] {
   return MOCK_SESSIONS.map((session, i) => ({

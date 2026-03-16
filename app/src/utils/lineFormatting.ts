@@ -1,5 +1,5 @@
-import { T } from "../theme";
-import type { LineType, SessionStatus, ShellType, ShellBadgeStyle } from "../types";
+import { T } from "@/theme";
+import type { LineType, SessionStatus, ShellType, ShellBadgeStyle } from "@/types";
 
 export const lineColor = (type: LineType): string => {
   switch (type) {

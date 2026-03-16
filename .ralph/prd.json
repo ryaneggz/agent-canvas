@@ -17,7 +17,7 @@
         "Verify in browser using agent-browser skill"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -33,7 +33,7 @@
         "Verify in browser using agent-browser skill"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -41,13 +41,15 @@
       "title": "Design Token System",
       "description": "As a developer, I want a single centralized T token object in theme.ts so that all color values are consistent across the app and can be changed from one location, using inline styles exclusively (no CSS variables).",
       "acceptanceCriteria": [
+        "TDD: Write src/__tests__/theme.test.ts first — verify T is exported, has all 19 keys (bg, grid, gridDot, surface, surfaceHover, border, borderActive, accent, accentDim, accentGlow, green, greenDim, amber, red, cyan, text, textDim, textMuted, overlay), each key maps to correct hex/rgba value from spec",
+        "Tests fail before implementation (npm test shows red)",
         "theme.ts exports a const T object typed with as const",
-        "The token object contains all 20 keys with exact values: bg, grid, gridDot, surface, surfaceHover, border, borderActive, accent, accentDim, accentGlow, green, greenDim, amber, red, cyan, text, textDim, textMuted, overlay",
         "No CSS variables are used anywhere in the project; all color references go through T",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -61,7 +63,7 @@
         "Typecheck passes (npx tsc --noEmit)"
       ],
       "priority": 4,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -69,16 +71,17 @@
       "title": "Utility Functions",
       "description": "As a developer, I want pure utility functions for value clamping, unique ID generation, and terminal line formatting so that these common operations are reusable and consistent.",
       "acceptanceCriteria": [
+        "TDD: Write src/__tests__/helpers.test.ts first — clamp returns correct values at boundaries (below min, above max, within range), uid returns a string of expected length",
+        "TDD: Write src/__tests__/lineFormatting.test.ts first — lineColor returns correct color per LineType, lineIcon returns correct character per LineType, statusColor returns correct color per SessionStatus, shellBadge returns correct {bg, fg, label} per ShellType",
+        "Tests fail before implementation (npm test shows red)",
         "helpers.ts exports clamp(v, min, max) returning Math.max(min, Math.min(max, v))",
         "helpers.ts exports uid() returning a random string via Math.random().toString(36).slice(2, 8)",
-        "lineFormatting.ts exports lineColor(type) returning correct color per type (stdin=accent, stdout=text, stderr=red, system=textDim)",
-        "lineFormatting.ts exports lineIcon(type) returning correct character per type ($, |, !, .)",
-        "lineFormatting.ts exports statusColor(status) returning green/red/textDim",
-        "lineFormatting.ts exports shellBadge(shell) returning correct {bg, fg, label} per shell",
+        "lineFormatting.ts exports lineColor, lineIcon, statusColor, shellBadge with return values matching spec tables exactly",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)"
       ],
       "priority": 5,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -86,15 +89,16 @@
       "title": "Pre-loaded Mock Sessions",
       "description": "As a user, I want to see four pre-loaded terminal sessions when the app first loads so that I can immediately explore the canvas without creating sessions manually.",
       "acceptanceCriteria": [
-        "MOCK_SESSIONS exports 4 sessions: api-server (bash/active/8 lines), git-workflow (zsh/active/8 lines), docker-build (bash/idle/6 lines), test-runner (bash/error/5 lines)",
-        "SPAWNER_TEMPLATES exports 4 templates: blank-bash, blank-zsh, project-shell, node-repl",
+        "TDD: Write src/__tests__/mockSessions.test.ts first — MOCK_SESSIONS has length 4, each session has correct name/shell/status/line-count, SPAWNER_TEMPLATES has length 4 with correct labels, each template has shell and description fields",
+        "Tests fail before implementation (npm test shows red)",
+        "MOCK_SESSIONS and SPAWNER_TEMPLATES exported with correct data",
         "On mount, 4 panels are created with cascading positions: x = 40 + i*60, y = 40 + i*50, w=520, h=380",
-        "All line types and statuses match the spec exactly",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
       "priority": 6,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -102,13 +106,16 @@
       "title": "Canvas Interaction Hook — State Management",
       "description": "As a developer, I want a single useCanvasInteractions hook that encapsulates all canvas state so that components remain stateless presentational layers.",
       "acceptanceCriteria": [
+        "TDD: Write src/__tests__/useCanvasInteractions.test.ts first using renderHook — initial panels has length 4, initial activeId is null, initial zoom is 1, initial canvasOffset is {x:0, y:0}, initial showSpawner is false, panels have cascading positions and dimensions (520x380), hook returns all expected action functions",
+        "Tests fail before implementation (npm test shows red)",
         "Hook manages panels, activeId, dragging, resizing, panning, canvasOffset, zoom, showSpawner, and maxZ ref",
         "Hook initializes panels from 4 mock sessions with correct positions",
         "Hook returns all state values and all action/handler functions needed by child components",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)"
       ],
       "priority": 7,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -116,17 +123,20 @@
       "title": "Canvas Pointer Interactions",
       "description": "As a user, I want to drag panels by their title bar, resize from a corner handle, pan the canvas background, and zoom with Ctrl/Cmd+scroll so that I can freely arrange and navigate the workspace.",
       "acceptanceCriteria": [
+        "TDD: Extend src/__tests__/useCanvasInteractions.test.ts — handleWheel with ctrlKey changes zoom by 0.05, zoom clamps to [0.3, 2.0], handleWheel without ctrlKey does not change zoom, startDrag/startResize/startPan set correct state",
+        "Tests fail before implementation (npm test shows red)",
         "Title bar mouseDown initiates drag with zoom-corrected offsets; mousemove updates position; mouseup clears drag",
         "Corner handle mouseDown initiates resize; width clamped 320-1200, height clamped 200-900, zoom-corrected",
         "Background mouseDown (detected via data-canvas attribute) initiates pan; mousemove updates offset; mouseup clears",
         "Ctrl/Cmd + wheel adjusts zoom by 0.05 per tick, clamped 0.3-2.0, with e.preventDefault()",
         "All mousemove/mouseup handlers registered on window in useEffect with cleanup on unmount",
         "Cursor shows grabbing during pan",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
       "priority": 8,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -134,16 +144,19 @@
       "title": "Panel Actions (Bring-to-Front, Close, Tile, Spawn, Reset)",
       "description": "As a user, I want to bring panels to front, close them, auto-tile in a grid, spawn new sessions, and reset the viewport so that I can efficiently manage my workspace.",
       "acceptanceCriteria": [
+        "TDD: Extend src/__tests__/useCanvasInteractions.test.ts — bringToFront updates panel z and sets activeId, closePanel removes panel and clears activeId if matched, closePanel is idempotent, tilePanels arranges in grid, spawnSession adds panel with 2 initial lines and closes spawner, resetView resets offset and zoom",
+        "Tests fail before implementation (npm test shows red)",
         "bringToFront(id) increments maxZ and updates panel z-index, sets activeId",
         "closePanel(id) removes panel; clears activeId if it was the active panel",
         "tilePanels() arranges panels in grid (cols=ceil(sqrt(n)), tileW=500, tileH=360, gap=20)",
         "spawnSession(template) creates panel with uid, random position, 2 initial lines, appends to panels, closes spawner",
         "resetView() sets offset to (0,0) and zoom to 1",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
       "priority": 9,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -151,15 +164,18 @@
       "title": "Infinite Canvas with Dot Grid",
       "description": "As a user, I want to navigate an infinite canvas with a subtle dot grid background so that I have spatial context while panning and zooming.",
       "acceptanceCriteria": [
+        "TDD: Write src/__tests__/Canvas.test.tsx first — canvas-area div renders, zoom-layer has data-canvas attribute, pan-layer has data-canvas attribute, 3-level nesting structure exists, canvas renders 4 session panels on mount",
+        "Tests fail before implementation (npm test shows red)",
         "Canvas fills viewport (100vw x 100vh) with overflow: hidden and background: T.bg",
         "Dot grid uses radial-gradient with T.gridDot, spacing of 24 * zoom px, moves with pan/zoom",
         "Transform structure: canvas-area -> zoom-layer (scale(zoom)) -> pan-layer (translate(offset)) -> panels",
         "zoom-layer and pan-layer carry data-canvas=\"true\" for click-through",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
       "priority": 10,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -167,15 +183,18 @@
       "title": "Toolbar Controls",
       "description": "As a user, I want a persistent toolbar at the top so that I can create sessions, tile panels, reset view, and see session count and zoom level.",
       "acceptanceCriteria": [
+        "TDD: Write src/__tests__/Toolbar.test.tsx first — renders Agent Canvas logo text, renders + New Session / Tile / Reset View buttons, displays status text with session count and zoom percentage, clicking buttons calls correct handler props",
+        "Tests fail before implementation (npm test shows red)",
         "Toolbar positioned absolute top, zIndex 9999, gradient background with backdrop-filter: blur(8px)",
         "Contains: logo (26x26 gradient square with >_ + \"Agent Canvas\"), divider, \"+ New Session\" (primary), \"Tile\", \"Reset View\" buttons, spacer, status text",
         "\"+ New Session\" opens spawner modal; \"Tile\" auto-arranges; \"Reset View\" resets offset/zoom",
         "Status text shows \"{N} session(s) . {zoom}%\" and updates reactively",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
       "priority": 11,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -183,15 +202,18 @@
       "title": "Terminal Session Panel Display",
       "description": "As a user, I want each terminal session to appear as a draggable, resizable panel with a title bar showing session metadata so that I can arrange my workspace and identify sessions at a glance.",
       "acceptanceCriteria": [
+        "TDD: Write src/__tests__/SessionPanel.test.tsx first — renders session name, renders 3 traffic light dots, red dot click calls onClose, renders status dot, renders shell badge, renders CWD path, clicking panel calls onBringToFront, active panel has accent border",
+        "Tests fail before implementation (npm test shows red)",
         "Panel positioned absolutely using PanelState (x, y, w, h, z)",
         "Title bar: traffic lights (red=close clickable, amber/green decorative), status dot, session name, shell badge, cwd label",
         "Active panels show accent border/shadow glow; inactive panels have muted border/shadow",
         "Title bar cursor is grab; clicking brings panel to front",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
       "priority": 12,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -199,6 +221,8 @@
       "title": "Terminal Output Rendering",
       "description": "As a user, I want terminal lines to render with distinct visual styling per line type so that I can quickly distinguish input, output, errors, and system messages.",
       "acceptanceCriteria": [
+        "TDD: Extend src/__tests__/SessionPanel.test.tsx — renders all session lines, each line shows correct icon character, stdin lines have purple accent color, stderr lines render content, active session shows Working... text, terminal body renders expected line count",
+        "Tests fail before implementation (npm test shows red)",
         "Terminal body uses JetBrains Mono at 12.5px, auto-scrolls to bottom on mount",
         "Each line has icon column (via lineIcon()) and text column",
         "stdin: purple accent, fontWeight 500",
@@ -206,11 +230,12 @@
         "stderr: red left-border + tinted red background",
         "system: italic, dimmed color",
         "Active sessions show pulsing purple dot with \"Working...\" text",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
       "priority": 13,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -218,14 +243,17 @@
       "title": "Panel Resize Handle",
       "description": "As a user, I want to resize a terminal panel by dragging a corner handle so that I can adjust panel size to show more or less content.",
       "acceptanceCriteria": [
+        "TDD: Extend src/__tests__/SessionPanel.test.tsx — resize handle element renders, resize handle contains SVG, mouseDown on resize handle calls onResizeStart",
+        "Tests fail before implementation (npm test shows red)",
         "Resize handle at bottom-right with SVG grip lines",
         "Dragging resizes panel: width clamped [320, 1200], height clamped [200, 900]",
         "Resize brings panel to front",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
       "priority": 14,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -233,11 +261,14 @@
       "title": "New Session Spawner Modal",
       "description": "As a user, I want a modal to choose from predefined terminal templates so that I can quickly spawn new session panels.",
       "acceptanceCriteria": [
+        "TDD: Write src/__tests__/SpawnerModal.test.tsx first — renders New Terminal Session heading, renders 4 template cards, each card shows template label and shell badge, clicking template card calls onSpawn with correct template, clicking backdrop calls onClose, clicking inside modal card does not call onClose",
+        "Tests fail before implementation (npm test shows red)",
         "Modal shown when \"+ New Session\" clicked; backdrop at zIndex 10000 with T.overlay",
         "Clicking backdrop closes modal; clicking inside card does not",
         "Modal card: T.bg background, borderRadius 14, padding 24, width 420, fadeIn animation",
         "Heading \"New Terminal Session\", subtext, 4 template cards with staggered slideUp animation (delay = i * 0.04s)",
         "Cards show template label, shell badge, description; clicking spawns session and closes modal",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],
@@ -250,9 +281,12 @@
       "title": "Keyboard Hints Strip",
       "description": "As a user, I want a hint strip at the bottom of the canvas so that I can discover available interactions.",
       "acceptanceCriteria": [
+        "TDD: Write src/__tests__/KeyboardHints.test.tsx first — renders Drag background to pan text, renders scroll to zoom text, renders Drag title bar to move text, renders Corner handle to resize text",
+        "Tests fail before implementation (npm test shows red)",
         "Positioned absolute bottom 12px, centered, zIndex 9999",
         "Displays: \"Drag background to pan . Cmd/Ctrl + scroll to zoom . Drag title bar to move . Corner handle to resize\"",
         "Uses JetBrains Mono font, fontSize 10, T.textMuted color",
+        "All tests pass (npm test shows green)",
         "Typecheck passes (npx tsc --noEmit)",
         "Verify in browser using agent-browser skill"
       ],

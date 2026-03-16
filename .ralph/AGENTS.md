@@ -8,12 +8,17 @@ You are an autonomous coding agent working on a software project.
 2. Read the progress log at `progress.txt` (check Codebase Patterns section first)
 3. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
 4. Pick the **highest priority** user story where `passes: false`
-5. Implement that single user story
-6. Run quality checks (e.g., typecheck, lint, test - use whatever your project requires)
-7. Update CLAUDE.md files if you discover reusable patterns (see below)
-8. If checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
-9. Update the PRD to set `passes: true` for the completed story
-10. Append your progress to `progress.txt`
+5. **If the story has TDD acceptance criteria** (criteria starting with "TDD:"):
+   a. Write the failing test file(s) first
+   b. Run `npm test` to confirm the new tests fail (red)
+   c. Implement the minimum code to make all tests pass (green)
+   d. Run `npm test` to confirm all tests pass
+6. **If the story has no TDD criteria**, implement it directly
+7. Run quality checks: `npm run typecheck && npm run lint && npm test` (all must pass)
+8. Update CLAUDE.md files if you discover reusable patterns (see below)
+9. If checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
+10. Update the PRD to set `passes: true` for the completed story
+11. Append your progress to `progress.txt`
 
 ## Progress Report Format
 

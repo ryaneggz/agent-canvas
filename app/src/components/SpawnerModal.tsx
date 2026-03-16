@@ -1,7 +1,7 @@
 // Spawner modal component — see specs/09-spawner-modal.md
 // Minimal stub accepting props from Canvas; full implementation in US-015
 
-import type { SpawnerTemplate } from '../types';
+import type { SpawnerTemplate } from '@/types';
 
 interface SpawnerModalProps {
   onSpawn: (template: SpawnerTemplate) => void;

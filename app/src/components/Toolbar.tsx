@@ -1,4 +1,4 @@
-import { T } from '../theme';
+import { T } from '@/theme';
 
 interface ToolbarProps {
   panelCount: number;

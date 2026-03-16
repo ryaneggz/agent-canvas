@@ -41,12 +41,6 @@ npm run lint         # eslint
 | `npm run test:watch` | Vitest (watch mode) |
 | `npm run test:coverage` | Vitest with coverage |
 
-## Pre-commit Hooks
-
-Husky + lint-staged runs on every commit:
-- `*.{ts,tsx}` — ESLint fix + Vitest related tests
-- `*.{json,md,css}` — Prettier format
-
 ## Architecture
 
 Single-page app with an infinite pannable/zoomable canvas containing draggable, resizable terminal session panels. No external UI libraries.
@@ -57,7 +51,6 @@ Single-page app with an infinite pannable/zoomable canvas containing draggable, 
 src/
 ├── main.tsx                     # ReactDOM.createRoot → <App />
 ├── App.tsx                      # Renders <AgentCanvas /> (alias for Canvas)
-├── App.test.tsx                 # Smoke test
 ├── theme.ts                     # Design tokens (T object) — all colors, inline styles only, no CSS variables
 ├── types.ts                     # All TypeScript interfaces/types
 ├── data/
@@ -75,12 +68,25 @@ src/
 │   └── KeyboardHints.tsx        # Bottom hint strip
 ├── styles/
 │   └── global.css               # Fonts, keyframes (pulse, fadeIn, slideUp), scrollbar, button classes
-└── test/
-    └── setup.ts                 # Vitest setup (@testing-library/jest-dom)
+├── test/
+│   └── setup.ts                 # Vitest setup (@testing-library/jest-dom)
+└── __tests__/                   # All test files live here
+    ├── App.test.tsx             # Smoke test
+    ├── theme.test.ts            # Token object key/value assertions
+    ├── mockSessions.test.ts     # Array lengths, session structure, template structure
+    ├── helpers.test.ts          # clamp boundary tests, uid format tests
+    ├── lineFormatting.test.ts   # Return value assertions per type/status/shell
+    ├── useCanvasInteractions.test.ts # renderHook tests: init state, actions, interactions
+    ├── Canvas.test.tsx          # DOM structure, data-canvas attributes, panel rendering
+    ├── Toolbar.test.tsx         # Button rendering, click handlers, status text
+    ├── SessionPanel.test.tsx    # Title bar, traffic lights, line rendering, resize handle
+    ├── SpawnerModal.test.tsx    # Template cards, click-to-spawn, backdrop close
+    └── KeyboardHints.test.tsx   # Hint text content
 ```
 
 ### Key Design Decisions
 
+- **Import alias `@/`** — all imports use `@/` to reference `src/` (e.g., `import { T } from '@/theme'`). Configured in `tsconfig.app.json` (paths) and `vite.config.ts` (resolve.alias). Never use relative paths like `../` or `./` for cross-module imports.
 - **Inline styles only** — all colors reference the `T` token object from `theme.ts`. No CSS variables.
 - **CSS classes** are limited to `global.css` for: `.toolbar-btn`, `.toolbar-btn.primary`, `.spawner-option`, keyframe animations, and scrollbar styling.
 - **Fonts**: DM Sans (UI chrome) and JetBrains Mono (terminal content), loaded via CSS `@import` from Google Fonts.
@@ -119,6 +125,43 @@ All pointer interactions managed in a single custom hook:
 4 pre-loaded sessions on mount: `api-server` (bash/active), `git-workflow` (zsh/active), `docker-build` (bash/idle), `test-runner` (bash/error). Initial positions cascade: `x = 40 + i*60`, `y = 40 + i*50`, all at w=520, h=380.
 
 4 spawner templates: `blank-bash`, `blank-zsh`, `project-shell`, `node-repl`.
+
+## Testing (TDD)
+
+This project follows a **test-first (TDD)** workflow. Tests are written before implementation for every story that has testable runtime behavior.
+
+### Infrastructure
+
+- **Runner:** Vitest 4.x with `jsdom` environment (`globals: true`)
+- **Rendering:** `@testing-library/react` — `render`, `screen`, `fireEvent`
+- **Assertions:** `@testing-library/jest-dom` matchers (`toBeInTheDocument`, etc.)
+- **Hook testing:** `renderHook` + `act` from `@testing-library/react`
+- **Setup:** `src/test/setup.ts` imports jest-dom matchers globally
+- **Config:** `vite.config.ts` — `test.environment: 'jsdom'`, `test.setupFiles: './src/test/setup.ts'`
+
+### Conventions
+
+- **Centralized `__tests__/` folder** — all test files live in `src/__tests__/`, named to match their source (e.g., `helpers.test.ts` tests `utils/helpers.ts`, `Canvas.test.tsx` tests `components/Canvas.tsx`)
+- **Behavior-driven names** — use `describe`/`it` blocks with clear intent (e.g., `it('returns T.accent for stdin type')`)
+- **Test public API** — assert on rendered output and return values, not implementation details
+- **No mocks** — zero external dependencies means no mocking needed; test real modules directly
+- **Use `@/` import alias** — all imports use `@/` to reference `src/` (e.g., `import { clamp } from '@/utils/helpers'`, `import App from '@/App'`). Configured in both `tsconfig.app.json` (paths) and `vite.config.ts` (resolve.alias).
+
+### TDD Workflow (per story)
+
+1. **Write failing tests** covering the story's acceptance criteria
+2. **Run `npm test`** — confirm new tests fail (red)
+3. **Implement** the minimum code to make tests pass (green)
+4. **Run full quality gate** — `npm run typecheck && npm run lint && npm test`
+5. **Browser verify** (UI stories) — `agent-browser` skill at `localhost:5173`
+
+### Quality Gate Order
+
+Tests (red → green) → Typecheck → Lint → Browser verify
+
+### Pre-commit Hooks
+
+Husky + lint-staged automatically runs `vitest related --run` on staged `*.{ts,tsx}` files, so broken tests block commits.
 
 ## Implementation Notes
 
