@@ -21,3 +21,13 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Port 5173 is occupied by another app on this machine; use a different port for testing
   - The app's working directory for npm commands is `app/`, not project root
 ---
+
+## 2026-03-15 23:28 - US-002
+- Added Google Fonts @import for DM Sans and JetBrains Mono (400/500/600/700) with display=swap
+- Added `import './styles/global.css'` to main.tsx
+- Files changed: src/styles/global.css, src/main.tsx
+- **Learnings for future iterations:**
+  - global.css must be imported in main.tsx — it was not imported by the scaffold
+  - Font @import must be at the very top of global.css before any other rules
+  - DM Sans for UI chrome, JetBrains Mono for terminal content (applied via inline styles on individual components)
+---

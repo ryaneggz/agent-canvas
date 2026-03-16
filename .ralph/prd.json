@@ -33,7 +33,7 @@
         "Verify in browser using agent-browser skill"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

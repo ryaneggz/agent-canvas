@@ -1,4 +1,5 @@
-/* Global styles — see specs/10-hints-css.md */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap");
+
 * {
   box-sizing: border-box;
   margin: 0;
