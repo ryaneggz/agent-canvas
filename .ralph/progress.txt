@@ -221,3 +221,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - US-002 was already implemented — just needed verification and PRD update
   - Many pre-TDD-reset stories are already implemented; check existing code before writing new code
 ---
+
+## 2026-03-16 00:24 - US-003
+- Wrote TDD tests for T token object in src/__tests__/theme.test.ts
+- Tests verify: T is exported, has exactly 19 keys, all keys present, each key maps to correct value
+- Implementation already existed from prior iteration — all 22 tests passed immediately
+- Quality gate: typecheck, lint, test all pass
+- Files changed: src/__tests__/theme.test.ts (new)
+- **Learnings for future iterations:**
+  - theme.ts was already implemented pre-TDD-reset; only tests needed to be added
+  - Test pattern: describe block for object, nested describe for values, one it() per key/value assertion
+  - Use `Object.keys(T).sort()` for order-independent key comparison
+---
