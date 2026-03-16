@@ -6,6 +6,8 @@ Started: Sun Mar 15 23:25:31 MDT 2026
 - All component stubs return `<div />` — implement one story at a time
 - Typecheck/lint/test commands: `npm run typecheck`, `npm run lint`, `npm test` (run from app/)
 - Inline styles only — all colors via `T` token object from `theme.ts`, no CSS variables
+- The `useCanvasInteractions` hook returns all state and actions — components are stateless presentational layers
+- Hook uses `useEffect` with window-level mousemove/mouseup for drag/resize/pan — deps must include dragging, resizing, panning, zoom, canvasOffset
 ---
 
 ## 2026-03-15 23:26 - US-001
@@ -74,4 +76,20 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Multi-line stdout in the spec (e.g., docker build output) should be combined into a single SessionLine with `\n` to match line counts
   - The "On mount, 4 panels" criterion belongs to the hook (US-007), not this data story
   - Mock data imports types from `../types` — keep type imports consistent
+---
+
+## 2026-03-15 23:40 - US-007
+- Implemented full `useCanvasInteractions` hook in hooks/useCanvasInteractions.ts
+- State: panels, activeId, dragging, resizing, panning, canvasOffset, zoom, showSpawner, maxZ ref
+- Actions: bringToFront, closePanel, tilePanels, spawnSession, resetView
+- Handlers: startDrag, startResize, startPan, handleWheel, setShowSpawner
+- Initializes 4 panels from MOCK_SESSIONS with cascading positions (x=40+i*60, y=40+i*50)
+- Window-level mousemove/mouseup in useEffect with proper cleanup
+- Files changed: src/hooks/useCanvasInteractions.ts
+- **Learnings for future iterations:**
+  - The hook stub was `export {}` — replaced entirely
+  - Hook contains both state management (US-007) and interaction logic (US-008/US-009) since they're all in one file
+  - `startDrag` reads panels inside `setPanels` to get current panel position for offset calc (avoids stale closure)
+  - `tilePanels` uses canvasOffset to position panels relative to current view, not absolute
+  - React.MouseEvent types for handler params, native MouseEvent for window listeners
 ---
