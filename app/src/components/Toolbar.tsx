@@ -6,9 +6,10 @@ interface ToolbarProps {
   onNewSession: () => void;
   onTile: () => void;
   onResetView: () => void;
+  wsConnected?: boolean;
 }
 
-export default function Toolbar({ panelCount, zoom, onNewSession, onTile, onResetView }: ToolbarProps) {
+export default function Toolbar({ panelCount, zoom, onNewSession, onTile, onResetView, wsConnected }: ToolbarProps) {
   return (
     <div
       style={{
@@ -80,6 +81,20 @@ export default function Toolbar({ panelCount, zoom, onNewSession, onTile, onRese
 
       {/* Spacer */}
       <div style={{ flex: 1 }} />
+
+      {/* WS connection indicator */}
+      {wsConnected !== undefined && (
+        <span
+          style={{
+            fontSize: 8,
+            color: wsConnected ? T.green : T.red,
+            marginRight: 4,
+          }}
+          title={wsConnected ? 'Server connected' : 'Server disconnected'}
+        >
+          ●
+        </span>
+      )}
 
       {/* Status text */}
       <span

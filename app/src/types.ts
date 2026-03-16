@@ -14,6 +14,7 @@ export interface Session {
   shell: ShellType;
   cwd: string;
   lines: SessionLine[];
+  partialLine?: string;
 }
 
 export interface PanelState {
@@ -24,6 +25,7 @@ export interface PanelState {
   w: number;
   h: number;
   z: number;
+  live?: boolean;
 }
 
 export interface DragState {
@@ -60,3 +62,18 @@ export interface ShellBadgeStyle {
   fg: string;
   label: string;
 }
+
+// WebSocket message types
+
+export type WsClientMessage =
+  | { type: 'session.create'; id: string; shell: ShellType; cwd: string; cols?: number; rows?: number }
+  | { type: 'session.input'; id: string; data: string }
+  | { type: 'session.resize'; id: string; cols: number; rows: number }
+  | { type: 'session.clear'; id: string }
+  | { type: 'session.close'; id: string };
+
+export type WsServerMessage =
+  | { type: 'session.output'; id: string; data: string | string[]; remove?: number }
+  | { type: 'session.partial'; id: string; data: string }
+  | { type: 'session.exit'; id: string; code: number }
+  | { type: 'session.error'; id: string; error: string };

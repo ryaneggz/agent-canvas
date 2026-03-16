@@ -23,6 +23,26 @@ const mockPanel: PanelState = {
   z: 1,
 };
 
+const livePanel: PanelState = {
+  id: 'live-panel-1',
+  session: {
+    name: 'live-bash',
+    status: 'active',
+    shell: 'bash',
+    cwd: '~/projects',
+    lines: [
+      { t: 'stdout', v: 'user@host:~$ ls' },
+      { t: 'stdout', v: '\x1b[34mfolder\x1b[0m  file.txt' },
+    ],
+  },
+  x: 100,
+  y: 200,
+  w: 520,
+  h: 380,
+  z: 1,
+  live: true,
+};
+
 const defaultProps = {
   panel: mockPanel,
   isActive: false,
@@ -32,7 +52,19 @@ const defaultProps = {
   onBringToFront: vi.fn(),
 };
 
-function renderPanel(overrides: Partial<typeof defaultProps> = {}) {
+interface RenderOverrides {
+  panel?: PanelState;
+  isActive?: boolean;
+  onDragStart?: typeof vi.fn;
+  onResizeStart?: typeof vi.fn;
+  onClose?: typeof vi.fn;
+  onBringToFront?: typeof vi.fn;
+  onSendInput?: (id: string, input: string) => void;
+  onSendRaw?: (id: string, data: string) => void;
+  onClearLines?: (id: string) => void;
+}
+
+function renderPanel(overrides: RenderOverrides = {}) {
   const props = {
     ...defaultProps,
     onDragStart: vi.fn(),
@@ -53,7 +85,6 @@ describe('SessionPanel', () => {
 
     it('renders 3 traffic light dots', () => {
       const { container } = renderPanel();
-      // Traffic lights are 11x11 circular divs
       const dots = container.querySelectorAll('div[style*="border-radius: 50%"]');
       expect(dots).toHaveLength(3);
     });
@@ -61,7 +92,6 @@ describe('SessionPanel', () => {
     it('red dot click calls onClose', () => {
       const onClose = vi.fn();
       const { container } = renderPanel({ onClose });
-      // Red dot is the first traffic light with cursor: pointer
       const dots = container.querySelectorAll('div[style*="border-radius: 50%"]');
       fireEvent.click(dots[0]);
       expect(onClose).toHaveBeenCalledWith('test-panel-1');
@@ -69,9 +99,7 @@ describe('SessionPanel', () => {
 
     it('renders status dot', () => {
       renderPanel();
-      // Status dot is a ● character
       const dots = screen.getAllByText('●');
-      // At least one status dot in the title bar
       expect(dots.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -90,7 +118,6 @@ describe('SessionPanel', () => {
     it('clicking panel calls onBringToFront', () => {
       const onBringToFront = vi.fn();
       const { container } = renderPanel({ onBringToFront });
-      // Click the outermost panel div
       fireEvent.mouseDown(container.firstElementChild!);
       expect(onBringToFront).toHaveBeenCalledWith('test-panel-1');
     });
@@ -100,22 +127,19 @@ describe('SessionPanel', () => {
     it('active panel has accent border', () => {
       const { container } = renderPanel({ isActive: true });
       const panel = container.firstElementChild as HTMLElement;
-      // jsdom converts hex to rgb; #2d3548 → rgb(45, 53, 72)
       expect(panel.style.border).toContain('rgb(45, 53, 72)');
     });
 
     it('inactive panel has muted border', () => {
       const { container } = renderPanel({ isActive: false });
       const panel = container.firstElementChild as HTMLElement;
-      // jsdom converts hex to rgb; #1a1f2e → rgb(26, 31, 46)
       expect(panel.style.border).toContain('rgb(26, 31, 46)');
     });
   });
 
-  describe('Terminal output rendering (US-013)', () => {
+  describe('Mock session rendering (icons, colors, decorations)', () => {
     it('renders all session lines', () => {
       renderPanel();
-      // Each line is a flex div inside terminal body; mock has 4 lines
       expect(screen.getByText('Session started')).toBeInTheDocument();
       expect(screen.getByText('npm start')).toBeInTheDocument();
       expect(screen.getByText('Server running on port 3000')).toBeInTheDocument();
@@ -124,17 +148,14 @@ describe('SessionPanel', () => {
 
     it('terminal body renders expected line count', () => {
       const { container } = renderPanel();
-      // 4 lines + 1 "Working..." row for active session = 5 child divs in terminal body
-      // Terminal body is the second child of the panel (after title bar)
       const panel = container.firstElementChild as HTMLElement;
       const terminalBody = panel.children[1] as HTMLElement;
-      // 4 line divs + 1 working indicator div
+      // 4 line divs + 1 working indicator div (mock active session)
       expect(terminalBody.children).toHaveLength(5);
     });
 
     it('each line shows correct icon character', () => {
       renderPanel();
-      // system → ·, stdin → $, stdout → │, stderr → !
       expect(screen.getByText('·')).toBeInTheDocument();
       expect(screen.getByText('$')).toBeInTheDocument();
       expect(screen.getByText('│')).toBeInTheDocument();
@@ -143,9 +164,7 @@ describe('SessionPanel', () => {
 
     it('stdin lines have purple accent color', () => {
       renderPanel();
-      // Find the stdin line text "npm start"
       const stdinText = screen.getByText('npm start');
-      // jsdom converts #c084fc to rgb(192, 132, 252)
       expect(stdinText.style.color).toContain('rgb(192, 132, 252)');
       expect(stdinText.style.fontWeight).toBe('500');
     });
@@ -153,14 +172,12 @@ describe('SessionPanel', () => {
     it('stderr lines render with red styling', () => {
       renderPanel();
       const stderrText = screen.getByText('Warning: deprecated API');
-      // stderr text should be present
       expect(stderrText).toBeInTheDocument();
-      // The parent line div should have a red left border
       const lineDiv = stderrText.parentElement as HTMLElement;
       expect(lineDiv.style.borderLeft).toContain('rgb(248, 113, 113)');
     });
 
-    it('active session shows Working... text', () => {
+    it('active mock session shows Working... text', () => {
       renderPanel({ panel: { ...mockPanel, session: { ...mockPanel.session, status: 'active' } } });
       expect(screen.getByText('Working...')).toBeInTheDocument();
     });
@@ -171,11 +188,119 @@ describe('SessionPanel', () => {
     });
   });
 
+  describe('Live session rendering (no icons, ANSI colors, no Working...)', () => {
+    it('does not render line-type icons for live panels', () => {
+      renderPanel({ panel: livePanel });
+      // Live panels should not have the icon characters
+      expect(screen.queryByText('│')).not.toBeInTheDocument();
+      expect(screen.queryByText('·')).not.toBeInTheDocument();
+    });
+
+    it('renders ANSI colored output via AnsiLine', () => {
+      const { container } = renderPanel({ panel: livePanel });
+      // The blue folder name should be rendered as a span with color style
+      const spans = container.querySelectorAll('span[style*="color"]');
+      // Should find at least one colored span from ANSI parsing
+      const blueSpan = Array.from(spans).find(
+        (s) => s.textContent === 'folder',
+      );
+      expect(blueSpan).toBeDefined();
+    });
+
+    it('does not show Working... indicator for live active session', () => {
+      renderPanel({ panel: { ...livePanel, session: { ...livePanel.session, status: 'active' } } });
+      expect(screen.queryByText('Working...')).not.toBeInTheDocument();
+    });
+
+    it('does not show separate input bar for live panels', () => {
+      renderPanel({
+        panel: livePanel,
+        onSendInput: vi.fn(),
+        onSendRaw: vi.fn(),
+      });
+      // No "Command input" aria-label input
+      expect(screen.queryByLabelText('Command input')).not.toBeInTheDocument();
+    });
+
+    it('terminal body is focusable for live panels', () => {
+      renderPanel({ panel: livePanel, onSendRaw: vi.fn() });
+      const termBody = screen.getByTestId('live-terminal-body');
+      expect(termBody.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('keyDown on terminal body sends raw data for printable chars', () => {
+      const onSendRaw = vi.fn();
+      renderPanel({ panel: livePanel, onSendRaw });
+      const termBody = screen.getByTestId('live-terminal-body');
+      fireEvent.keyDown(termBody, { key: 'a' });
+      expect(onSendRaw).toHaveBeenCalledWith('live-panel-1', 'a');
+    });
+
+    it('keyDown Enter sends \\r', () => {
+      const onSendRaw = vi.fn();
+      renderPanel({ panel: livePanel, onSendRaw });
+      const termBody = screen.getByTestId('live-terminal-body');
+      fireEvent.keyDown(termBody, { key: 'Enter' });
+      expect(onSendRaw).toHaveBeenCalledWith('live-panel-1', '\r');
+    });
+
+    it('keyDown Ctrl+C sends \\x03', () => {
+      const onSendRaw = vi.fn();
+      renderPanel({ panel: livePanel, onSendRaw });
+      const termBody = screen.getByTestId('live-terminal-body');
+      fireEvent.keyDown(termBody, { key: 'c', ctrlKey: true });
+      expect(onSendRaw).toHaveBeenCalledWith('live-panel-1', '\x03');
+    });
+
+    it('keyDown ArrowUp sends \\x1b[A', () => {
+      const onSendRaw = vi.fn();
+      renderPanel({ panel: livePanel, onSendRaw });
+      const termBody = screen.getByTestId('live-terminal-body');
+      fireEvent.keyDown(termBody, { key: 'ArrowUp' });
+      expect(onSendRaw).toHaveBeenCalledWith('live-panel-1', '\x1b[A');
+    });
+
+    it('keyDown Backspace sends \\x7f', () => {
+      const onSendRaw = vi.fn();
+      renderPanel({ panel: livePanel, onSendRaw });
+      const termBody = screen.getByTestId('live-terminal-body');
+      fireEvent.keyDown(termBody, { key: 'Backspace' });
+      expect(onSendRaw).toHaveBeenCalledWith('live-panel-1', '\x7f');
+    });
+
+    it('keyDown Tab sends \\t', () => {
+      const onSendRaw = vi.fn();
+      renderPanel({ panel: livePanel, onSendRaw });
+      const termBody = screen.getByTestId('live-terminal-body');
+      fireEvent.keyDown(termBody, { key: 'Tab' });
+      expect(onSendRaw).toHaveBeenCalledWith('live-panel-1', '\t');
+    });
+
+    it('keyDown Ctrl+L sends \\x0c and calls onClearLines', () => {
+      const onSendRaw = vi.fn();
+      const onClearLines = vi.fn();
+      renderPanel({ panel: livePanel, onSendRaw, onClearLines });
+      const termBody = screen.getByTestId('live-terminal-body');
+      fireEvent.keyDown(termBody, { key: 'l', ctrlKey: true });
+      expect(onSendRaw).toHaveBeenCalledWith('live-panel-1', '\x0c');
+      expect(onClearLines).toHaveBeenCalledWith('live-panel-1');
+    });
+
+    it('onPaste sends clipboard text as raw input', () => {
+      const onSendRaw = vi.fn();
+      renderPanel({ panel: livePanel, onSendRaw });
+      const termBody = screen.getByTestId('live-terminal-body');
+      fireEvent.paste(termBody, {
+        clipboardData: { getData: () => 'pasted text' },
+      });
+      expect(onSendRaw).toHaveBeenCalledWith('live-panel-1', 'pasted text');
+    });
+  });
+
   describe('Resize handle (US-014)', () => {
     it('resize handle element renders', () => {
       const { container } = renderPanel();
       const panel = container.firstElementChild as HTMLElement;
-      // Resize handle is an absolute-positioned div with nwse-resize cursor
       const resizeHandle = panel.querySelector('div[style*="nwse-resize"]');
       expect(resizeHandle).toBeInTheDocument();
     });

@@ -50,12 +50,12 @@ describe('Canvas', () => {
     expect(panLayer.style.transform).toContain('translate')
   })
 
-  it('renders 4 session panels on mount', () => {
+  it('starts with no session panels on mount', () => {
     render(<Canvas />)
-    // Mock sessions: api-server, git-workflow, docker-build, test-runner
-    expect(screen.getByText('api-server')).toBeInTheDocument()
-    expect(screen.getByText('git-workflow')).toBeInTheDocument()
-    expect(screen.getByText('docker-build')).toBeInTheDocument()
-    expect(screen.getByText('test-runner')).toBeInTheDocument()
+    // Mock sessions should not be present — canvas starts empty
+    expect(screen.queryByText('api-server')).not.toBeInTheDocument()
+    expect(screen.queryByText('git-workflow')).not.toBeInTheDocument()
+    expect(screen.queryByText('docker-build')).not.toBeInTheDocument()
+    expect(screen.queryByText('test-runner')).not.toBeInTheDocument()
   })
 })

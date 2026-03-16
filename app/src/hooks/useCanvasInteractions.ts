@@ -1,18 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { PanelState, DragState, ResizeState, PanState, SpawnerTemplate } from '@/types';
-import { MOCK_SESSIONS } from '@/data/mockSessions';
+import type { PanelState, DragState, ResizeState, PanState, SpawnerTemplate, SessionLine, SessionStatus } from '@/types';
 import { clamp, uid } from '@/utils/helpers';
 
 function initPanels(): PanelState[] {
-  return MOCK_SESSIONS.map((session, i) => ({
-    id: uid(),
-    session,
-    x: 40 + i * 60,
-    y: 40 + i * 50,
-    w: 520,
-    h: 380,
-    z: i + 1,
-  }));
+  return [];
 }
 
 export function useCanvasInteractions() {
@@ -24,7 +15,7 @@ export function useCanvasInteractions() {
   const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [showSpawner, setShowSpawner] = useState(false);
-  const maxZ = useRef(MOCK_SESSIONS.length + 1);
+  const maxZ = useRef(1);
 
   const bringToFront = useCallback((id: string) => {
     maxZ.current += 1;
@@ -63,16 +54,14 @@ export function useCanvasInteractions() {
         status: 'active',
         shell: template.shell,
         cwd: template.cwd,
-        lines: [
-          { t: 'system', v: `Session started (${template.shell})` },
-          { t: 'stdin', v: `$ cd ${template.cwd}` },
-        ],
+        lines: [],
       },
       x: 100 + Math.random() * 200 - canvasOffset.x,
       y: 100 + Math.random() * 150 - canvasOffset.y,
       w: 520,
       h: 380,
       z: maxZ.current,
+      live: true,
     };
     setPanels(prev => [...prev, newPanel]);
     setActiveId(newPanel.id);
@@ -82,6 +71,76 @@ export function useCanvasInteractions() {
   const resetView = useCallback(() => {
     setCanvasOffset({ x: 0, y: 0 });
     setZoom(1);
+  }, []);
+
+  const appendLine = useCallback((panelId: string, line: SessionLine) => {
+    setPanels(prev =>
+      prev.map(p =>
+        p.id === panelId
+          ? {
+              ...p,
+              session: {
+                ...p.session,
+                lines: [...p.session.lines, line].slice(-1000),
+                partialLine: undefined, // Clear partial when complete lines arrive
+              },
+            }
+          : p,
+      ),
+    );
+  }, []);
+
+  const removeLastLines = useCallback((panelId: string, count: number) => {
+    if (count <= 0) return;
+    setPanels(prev =>
+      prev.map(p =>
+        p.id === panelId
+          ? {
+              ...p,
+              session: {
+                ...p.session,
+                lines: p.session.lines.slice(0, Math.max(0, p.session.lines.length - count)),
+              },
+            }
+          : p,
+      ),
+    );
+  }, []);
+
+  const setPartialLine = useCallback((panelId: string, text: string) => {
+    setPanels(prev =>
+      prev.map(p =>
+        p.id === panelId
+          ? {
+              ...p,
+              session: {
+                ...p.session,
+                partialLine: text || undefined,
+              },
+            }
+          : p,
+      ),
+    );
+  }, []);
+
+  const updatePanelStatus = useCallback((panelId: string, status: SessionStatus) => {
+    setPanels(prev =>
+      prev.map(p =>
+        p.id === panelId
+          ? { ...p, session: { ...p.session, status } }
+          : p,
+      ),
+    );
+  }, []);
+
+  const clearLines = useCallback((panelId: string) => {
+    setPanels(prev =>
+      prev.map(p =>
+        p.id === panelId
+          ? { ...p, session: { ...p.session, lines: [], partialLine: undefined } }
+          : p,
+      ),
+    );
   }, []);
 
   const startDrag = useCallback((id: string, e: React.MouseEvent) => {
@@ -184,6 +243,11 @@ export function useCanvasInteractions() {
     tilePanels,
     spawnSession,
     resetView,
+    appendLine,
+    removeLastLines,
+    setPartialLine,
+    updatePanelStatus,
+    clearLines,
     startDrag,
     startResize,
     startPan,
