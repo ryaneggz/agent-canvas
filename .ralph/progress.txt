@@ -208,3 +208,16 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - The @/ import alias and __tests__/ folder were configured in the reset commit
   - Many stories (US-001 through US-014) were already implemented but need TDD tests written per new criteria
 ---
+
+## 2026-03-16 00:22 - US-002
+- Verified external font loading already implemented from prior iteration
+- Google Fonts @import loads DM Sans + JetBrains Mono (400/500/600/700) with display=swap
+- Body font-family set to "DM Sans" for UI chrome
+- Terminal body, status text, and toolbar status use JetBrains Mono via inline styles
+- global.css imported in main.tsx
+- All quality checks pass: typecheck, lint, test
+- Files changed: .ralph/prd.json (mark US-002 passes: true)
+- **Learnings for future iterations:**
+  - US-002 was already implemented — just needed verification and PRD update
+  - Many pre-TDD-reset stories are already implemented; check existing code before writing new code
+---
