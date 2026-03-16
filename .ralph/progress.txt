@@ -9,6 +9,7 @@ Started: Sun Mar 15 23:25:31 MDT 2026
 - Inline styles only — all colors via `T` token object from `theme.ts`, no CSS variables
 - The `useCanvasInteractions` hook returns all state and actions — components are stateless presentational layers
 - Hook uses `useEffect` with window-level mousemove/mouseup for drag/resize/pan — deps must include dragging, resizing, panning, zoom, canvasOffset
+- CSS classes (.toolbar-btn, .toolbar-btn.primary, .spawner-option) go in global.css with hardcoded hex values matching T tokens
 ---
 
 ## 2026-03-15 23:26 - US-001
@@ -139,4 +140,17 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - US-010 was already fully implemented during US-008 — Canvas.tsx was built complete when wiring up pointer interactions
   - The canvas-area div receives both mouseDown (pan) and onWheel (zoom) events
   - Dot grid backgroundPosition uses canvasOffset * zoom to track with panning
+---
+
+## 2026-03-15 23:52 - US-011
+- Implemented full Toolbar component with logo, divider, 3 buttons, spacer, and status text
+- Added .toolbar-btn and .toolbar-btn.primary CSS classes to global.css
+- Logo: 26x26 gradient square with >_ character + "Agent Canvas" label
+- Status text: "{N} session(s) · {zoom}%" with JetBrains Mono font
+- All buttons wired to props: onNewSession, onTile, onResetView
+- Files changed: src/components/Toolbar.tsx, src/styles/global.css
+- **Learnings for future iterations:**
+  - toolbar-btn CSS classes use hardcoded hex values matching T tokens (CSS can't reference JS const)
+  - The primary button variant uses rgba for background/border, not T tokens
+  - global.css will accumulate more classes in US-017 (scrollbar, animations, spawner-option)
 ---
