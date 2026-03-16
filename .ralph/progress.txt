@@ -339,3 +339,17 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Tile and Reset View buttons have emoji prefixes (⊞, ⌂) — use regex matchers (/Tile/, /Reset View/) in tests
   - Use vi.fn() for handler props and assert toHaveBeenCalledTimes(1) after fireEvent.click
 ---
+
+## 2026-03-16 00:39 - US-012
+- Wrote TDD tests for SessionPanel component in src/__tests__/SessionPanel.test.tsx
+- Tests verify: session name, 3 traffic light dots, red dot click calls onClose, status dot, shell badge, CWD path, clicking panel calls onBringToFront, active/inactive border styling
+- 9 new tests, all pass (131 total)
+- Quality gate: typecheck, lint, test all pass
+- Files changed: src/__tests__/SessionPanel.test.tsx (new)
+- **Learnings for future iterations:**
+  - jsdom converts hex colors to rgb in style properties — use rgb values in assertions (e.g., `rgb(45, 53, 72)` not `#2d3548`)
+  - Traffic lights are 3 divs with `border-radius: 50%` — query with `querySelectorAll('div[style*="border-radius: 50%"]')`
+  - SessionPanel props: panel, isActive, onDragStart, onResizeStart, onClose, onBringToFront
+  - onClose is called with panel id, not event — assert `toHaveBeenCalledWith('panel-id')`
+  - Remove unused imports (e.g., T) to avoid lint errors — tests use rgb strings directly
+---
