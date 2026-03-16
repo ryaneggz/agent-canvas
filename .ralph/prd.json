@@ -321,7 +321,7 @@
         "Remote branch contains all commits from US-001 through US-017"
       ],
       "priority": 18,
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
