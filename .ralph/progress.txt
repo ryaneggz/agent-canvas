@@ -403,3 +403,13 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Use pointerEvents: none on overlay UI so it doesn't block canvas mouse events
   - Component uses translateX(-50%) with left: 50% for centering
 ---
+
+## 2026-03-16 00:49 - US-017
+- Added 3 keyframe animations (pulse, fadeIn, slideUp) and custom scrollbar styling to global.css
+- Global reset, .toolbar-btn, .toolbar-btn.primary, and .spawner-option classes already existed from prior iterations
+- Files changed: src/styles/global.css
+- **Learnings for future iterations:**
+  - Most of US-017 was already implemented incrementally during US-002, US-011, and US-015
+  - Only keyframe animations and scrollbar styling were missing
+  - Prettier reformats condensed CSS (single-line keyframes) into multi-line — commit includes prettier formatting
+---
