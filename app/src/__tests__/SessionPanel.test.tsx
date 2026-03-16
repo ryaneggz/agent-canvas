@@ -170,4 +170,31 @@ describe('SessionPanel', () => {
       expect(screen.queryByText('Working...')).not.toBeInTheDocument();
     });
   });
+
+  describe('Resize handle (US-014)', () => {
+    it('resize handle element renders', () => {
+      const { container } = renderPanel();
+      const panel = container.firstElementChild as HTMLElement;
+      // Resize handle is an absolute-positioned div with nwse-resize cursor
+      const resizeHandle = panel.querySelector('div[style*="nwse-resize"]');
+      expect(resizeHandle).toBeInTheDocument();
+    });
+
+    it('resize handle contains SVG', () => {
+      const { container } = renderPanel();
+      const panel = container.firstElementChild as HTMLElement;
+      const resizeHandle = panel.querySelector('div[style*="nwse-resize"]');
+      const svg = resizeHandle?.querySelector('svg');
+      expect(svg).toBeInTheDocument();
+    });
+
+    it('mouseDown on resize handle calls onResizeStart', () => {
+      const onResizeStart = vi.fn();
+      const { container } = renderPanel({ onResizeStart });
+      const panel = container.firstElementChild as HTMLElement;
+      const resizeHandle = panel.querySelector('div[style*="nwse-resize"]') as HTMLElement;
+      fireEvent.mouseDown(resizeHandle);
+      expect(onResizeStart).toHaveBeenCalledWith('test-panel-1', expect.any(Object));
+    });
+  });
 });
