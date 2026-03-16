@@ -256,3 +256,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - shellBadge tests assert raw rgba strings for bg, T tokens for fg, and string labels
   - statusColor "idle" falls through to default case returning T.textDim
 ---
+
+## 2026-03-16 00:27 - US-006
+- Wrote TDD tests for MOCK_SESSIONS and SPAWNER_TEMPLATES in src/__tests__/mockSessions.test.ts
+- Tests verify: array lengths, each session's name/shell/status/line-count, template labels, template shell/desc fields
+- Implementation already existed from prior iteration — all 9 new tests passed immediately (55 total)
+- Quality gate: typecheck, lint, test all pass
+- Files changed: src/__tests__/mockSessions.test.ts (new)
+- **Learnings for future iterations:**
+  - mockSessions.test.ts: 9 tests (5 MOCK_SESSIONS, 1 field check, 3 SPAWNER_TEMPLATES)
+  - Line counts: api-server=8, git-workflow=8, docker-build=6, test-runner=5
+  - The "On mount, 4 panels" criterion belongs to the hook (US-007), not this data story
+---
