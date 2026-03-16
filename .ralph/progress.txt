@@ -298,3 +298,18 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Use `vi.fn()` for stopPropagation/preventDefault in mock events
   - `act()` from @testing-library/react wraps state-changing hook calls
 ---
+
+## 2026-03-16 00:33 - US-009
+- Extended src/__tests__/useCanvasInteractions.test.ts with 16 new TDD tests for panel actions
+- bringToFront: updates z-index to highest, sets activeId, supports switching active panel
+- closePanel: removes panel, clears activeId if matched, preserves activeId if different panel closed, idempotent for non-existent IDs
+- tilePanels: arranges in grid (cols=ceil(sqrt(n)), tileW=500, tileH=360, gap=20), correct column count with fewer panels
+- spawnSession: adds panel, 2 initial lines (system + stdin), closes spawner modal, sets new panel as active, assigns correct shell/cwd
+- resetView: resets canvasOffset to {0,0} and zoom to 1
+- Implementation already existed from prior iterations — all 107 tests pass (16 new + 91 existing)
+- Files changed: src/__tests__/useCanvasInteractions.test.ts
+- **Learnings for future iterations:**
+  - When closing multiple panels in a single act(), capture IDs before calling closePanel — result.current won't update mid-act
+  - SpawnerTemplate import from @/types needed for spawnSession test type safety
+  - tilePanels offsets by canvasOffset — tests work at default offset (0,0) so grid positions are straightforward
+---
