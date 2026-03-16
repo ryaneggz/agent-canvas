@@ -154,3 +154,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - The primary button variant uses rgba for background/border, not T tokens
   - global.css will accumulate more classes in US-017 (scrollbar, animations, spawner-option)
 ---
+
+## 2026-03-15 23:55 - US-012
+- Added status dot (● character with statusColor), shell badge (from shellBadge()), and CWD label to title bar
+- Restructured title bar: traffic lights → session info wrapper (status dot + name + shell badge) → CWD label
+- Imported statusColor and shellBadge from lineFormatting utils
+- Files changed: src/components/SessionPanel.tsx
+- **Learnings for future iterations:**
+  - SessionPanel already had outer container, traffic lights, and resize handle from US-008 — US-012 only needed title bar metadata additions
+  - Shell badge uses an IIFE `(() => { const badge = shellBadge(...); return ... })()` to avoid separate variable declaration
+  - CWD label goes outside the session info wrapper as a separate flex item with flexShrink: 0
+  - Terminal body is still a placeholder — full line rendering is US-013
+---
