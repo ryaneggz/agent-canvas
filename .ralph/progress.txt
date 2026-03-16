@@ -3,7 +3,8 @@ Started: Sun Mar 15 23:25:31 MDT 2026
 
 ## Codebase Patterns
 - Port 5173 may be in use by another app; Vite will auto-increment to 5174/5175
-- All component stubs return `<div />` — implement one story at a time
+- Component stubs must accept props matching Canvas's usage — update interfaces when wiring up
+- App.tsx renders `<Canvas />` aliased as `<AgentCanvas />`; Canvas uses the hook directly
 - Typecheck/lint/test commands: `npm run typecheck`, `npm run lint`, `npm test` (run from app/)
 - Inline styles only — all colors via `T` token object from `theme.ts`, no CSS variables
 - The `useCanvasInteractions` hook returns all state and actions — components are stateless presentational layers
@@ -92,4 +93,21 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - `startDrag` reads panels inside `setPanels` to get current panel position for offset calc (avoids stale closure)
   - `tilePanels` uses canvasOffset to position panels relative to current view, not absolute
   - React.MouseEvent types for handler params, native MouseEvent for window listeners
+---
+
+## 2026-03-15 23:44 - US-008
+- Wired up Canvas.tsx with useCanvasInteractions hook — 3-level transform nesting, dot grid, pointer events
+- Implemented SessionPanel.tsx with drag (title bar), resize (corner handle), close (red dot), bringToFront
+- Updated Toolbar, SpawnerModal, KeyboardHints stubs to accept props from Canvas
+- Updated App.tsx to render Canvas component (aliased as AgentCanvas)
+- Updated App.test.tsx to check for 'api-server' panel text instead of removed 'Agent Canvas' div
+- Cursor shows 'grabbing' during canvas pan
+- Files changed: App.tsx, App.test.tsx, Canvas.tsx, SessionPanel.tsx, Toolbar.tsx, SpawnerModal.tsx, KeyboardHints.tsx
+- **Learnings for future iterations:**
+  - When Canvas wires up child components, their stubs must accept the props Canvas passes — use `void` for unused params
+  - SessionPanel props: panel, isActive, onDragStart, onResizeStart, onClose, onBringToFront
+  - Toolbar props: panelCount, zoom, onNewSession, onTile, onResetView
+  - SpawnerModal props: onSpawn, onClose
+  - The smoke test checks for rendered panel content — update if rendering changes
+  - Terminal body and full line rendering are placeholders — full implementation in US-012/US-013
 ---
