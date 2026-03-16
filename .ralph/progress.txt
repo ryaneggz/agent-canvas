@@ -268,3 +268,17 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Line counts: api-server=8, git-workflow=8, docker-build=6, test-runner=5
   - The "On mount, 4 panels" criterion belongs to the hook (US-007), not this data story
 ---
+
+## 2026-03-16 00:29 - US-007
+- Wrote TDD tests for useCanvasInteractions hook in src/__tests__/useCanvasInteractions.test.ts
+- Tests verify: initial panels length 4, activeId null, zoom 1, canvasOffset {0,0}, showSpawner false
+- Tests verify: cascading positions (x=40+i*60, y=40+i*50), dimensions 520x380, incrementing z-index
+- Tests verify: all 10 action/handler functions returned, panning state returned
+- Implementation already existed from prior iteration — all 21 new tests passed immediately (76 total)
+- Quality gate: typecheck, lint, test all pass
+- Files changed: src/__tests__/useCanvasInteractions.test.ts (new)
+- **Learnings for future iterations:**
+  - renderHook from @testing-library/react used for hook testing (no wrapper needed)
+  - Hook returns 10 functions + 5 state values — test all return types
+  - The hook uses MOCK_SESSIONS for init, so panel count matches mock data length (4)
+---
