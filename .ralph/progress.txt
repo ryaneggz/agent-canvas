@@ -196,3 +196,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Resize logic lives in useCanvasInteractions hook's useEffect mousemove handler
   - Several stories (US-009, US-010, US-014) ended up as verification passes because US-007/US-008 built everything at once
 ---
+
+## 2026-03-16 00:21 - US-001 (TDD reset re-verification)
+- Verified project scaffold is complete with all 14 prescribed source files
+- Only react/react-dom as runtime dependencies (React 19.2.4)
+- Typecheck, lint, and 1 test all pass
+- No code changes needed — scaffold was already committed in prior iterations
+- Files changed: .ralph/prd.json (mark US-001 passes: true)
+- **Learnings for future iterations:**
+  - PRD was reset (all passes: false) with TDD requirements added — stories need re-verification
+  - The @/ import alias and __tests__/ folder were configured in the reset commit
+  - Many stories (US-001 through US-014) were already implemented but need TDD tests written per new criteria
+---
