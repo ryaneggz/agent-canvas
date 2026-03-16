@@ -36,3 +36,16 @@ body {
 .toolbar-btn.primary:hover {
   background: rgba(192, 132, 252, 0.25);
 }
+
+.spawner-option {
+  background: #0e1118;
+  border: 1px solid #1a1f2e;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.spawner-option:hover {
+  background: #131720;
+  border-color: #2d3548;
+}
