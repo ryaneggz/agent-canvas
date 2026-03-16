@@ -15,7 +15,12 @@ progress.txt
 # Claude
 **/.env*
 
-# Defensive patterns
+# Dependencies
 **/node_modules/
+
+# Build output
+app/dist/
+
+# Defensive patterns
 **/.next/
 # .claude/plans/

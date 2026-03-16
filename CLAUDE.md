@@ -1,26 +1,63 @@
 # Agent Canvas
 
-An infinite-canvas terminal session viewer built with Vite + React 19 + TypeScript. Zero additional npm dependencies — all interactions use native DOM events and React state.
+An infinite-canvas terminal session viewer built with Vite + React 19 + TypeScript. Zero additional npm dependencies beyond React — all interactions use native DOM events and React state.
+
+## Project Layout
+
+```
+├── app/                         # Vite + React application
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── index.html
+│   └── src/                     # Application source code
+├── specs/                       # Implementation specs (01–10)
+├── docs/                        # Documentation
+├── CLAUDE.md                    # This file
+└── AGENTS.md -> CLAUDE.md       # Symlink
+```
 
 ## Quick Start
 
 ```bash
-npm create vite@latest . -- --template react-ts
+cd app
 npm install
 npm run dev          # localhost:5173
 npx tsc --noEmit     # typecheck
+npm test             # vitest
+npm run lint         # eslint
 ```
+
+## App Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | Typecheck + production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | ESLint |
+| `npm run lint:fix` | ESLint with auto-fix |
+| `npm run typecheck` | TypeScript check (no emit) |
+| `npm test` | Vitest (single run) |
+| `npm run test:watch` | Vitest (watch mode) |
+| `npm run test:coverage` | Vitest with coverage |
+
+## Pre-commit Hooks
+
+Husky + lint-staged runs on every commit:
+- `*.{ts,tsx}` — ESLint fix + Vitest related tests
+- `*.{json,md,css}` — Prettier format
 
 ## Architecture
 
 Single-page app with an infinite pannable/zoomable canvas containing draggable, resizable terminal session panels. No external UI libraries.
 
-### File Structure
+### App File Structure (`app/src/`)
 
 ```
 src/
 ├── main.tsx                     # ReactDOM.createRoot → <App />
 ├── App.tsx                      # Renders <AgentCanvas /> (alias for Canvas)
+├── App.test.tsx                 # Smoke test
 ├── theme.ts                     # Design tokens (T object) — all colors, inline styles only, no CSS variables
 ├── types.ts                     # All TypeScript interfaces/types
 ├── data/
@@ -36,8 +73,10 @@ src/
 │   ├── SessionPanel.tsx         # Terminal window: title bar, traffic lights, terminal body, resize handle
 │   ├── SpawnerModal.tsx         # New session modal with template cards
 │   └── KeyboardHints.tsx        # Bottom hint strip
-└── styles/
-    └── global.css               # Fonts, keyframes (pulse, fadeIn, slideUp), scrollbar, button classes
+├── styles/
+│   └── global.css               # Fonts, keyframes (pulse, fadeIn, slideUp), scrollbar, button classes
+└── test/
+    └── setup.ts                 # Vitest setup (@testing-library/jest-dom)
 ```
 
 ### Key Design Decisions
