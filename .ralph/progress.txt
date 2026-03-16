@@ -366,3 +366,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Active session has 4 line divs + 1 working indicator div = 5 children in terminal body
   - stdinText.style.color in jsdom returns rgb format — use `rgb(192, 132, 252)` for T.accent (#c084fc)
 ---
+
+## 2026-03-16 00:43 - US-014
+- Added 3 TDD tests to SessionPanel.test.tsx for resize handle
+- Tests verify: resize handle renders (nwse-resize cursor), contains SVG, mouseDown calls onResizeStart with panel id
+- Implementation already existed from US-008 — all 141 tests pass (3 new + 138 existing)
+- Quality gate: typecheck, lint, test all pass
+- Files changed: src/__tests__/SessionPanel.test.tsx
+- **Learnings for future iterations:**
+  - Query resize handle via `div[style*="nwse-resize"]` CSS selector
+  - onResizeStart is called with (id, event) — use `expect.any(Object)` for the event arg
+  - SVG is nested inside the resize handle div — query with `.querySelector('svg')`
+---
