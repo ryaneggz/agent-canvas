@@ -5,6 +5,6 @@ import App from './App'
 describe('App', () => {
   it('renders without crashing', () => {
     render(<App />)
-    expect(screen.getByText('Agent Canvas')).toBeInTheDocument()
+    expect(screen.getByText('api-server')).toBeInTheDocument()
   })
 })

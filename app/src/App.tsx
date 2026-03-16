@@ -1,5 +1,9 @@
+import Canvas from './components/Canvas';
+
+const AgentCanvas = Canvas;
+
 function App() {
-  return <div>Agent Canvas</div>
+  return <AgentCanvas />;
 }
 
-export default App
+export default App;
