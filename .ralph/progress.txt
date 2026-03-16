@@ -51,3 +51,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Previous iteration left uncommitted changes in working tree; prd.json was also reverted — always verify committed vs working state
   - All type definitions are in a single file for easy import across modules
 ---
+
+## 2026-03-15 23:36 - US-005
+- Implemented `clamp()` and `uid()` in helpers.ts matching spec exactly
+- Implemented `lineColor()`, `lineIcon()`, `statusColor()`, `shellBadge()` in lineFormatting.ts
+- All return values match spec tables exactly
+- Files changed: src/utils/helpers.ts, src/utils/lineFormatting.ts
+- **Learnings for future iterations:**
+  - Utility stubs were `export {}` — replaced entirely
+  - lineFormatting.ts imports both `T` from theme.ts and types from types.ts
+  - shellBadge bg values use raw rgba strings, not T token references (spec-specific values)
+  - Switch statements on union types provide exhaustiveness checking without a default case
+---
