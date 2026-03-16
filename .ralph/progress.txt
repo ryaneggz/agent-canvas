@@ -391,3 +391,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Shell badges appear 3x bash + 1x zsh across the 4 templates — useful for assertion counts
   - Remove unused type imports to avoid lint errors (SpawnerTemplate not needed in tests)
 ---
+
+## 2026-03-16 00:48 - US-016
+- Wrote 4 TDD tests for KeyboardHints: renders pan, zoom, move, and resize hint text
+- Implemented KeyboardHints component: absolute bottom 12px, centered, zIndex 9999, JetBrains Mono 10px, T.textMuted
+- Hints separated by · dots with opacity 0.4
+- pointerEvents: none and userSelect: none to avoid interfering with canvas interactions
+- Files changed: src/__tests__/KeyboardHints.test.tsx (new), src/components/KeyboardHints.tsx
+- **Learnings for future iterations:**
+  - KeyboardHints takes no props — it's rendered directly by Canvas with no data dependency
+  - Use pointerEvents: none on overlay UI so it doesn't block canvas mouse events
+  - Component uses translateX(-50%) with left: 50% for centering
+---
