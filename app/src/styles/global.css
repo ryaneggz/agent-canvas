@@ -8,3 +8,31 @@ body {
   font-family: "DM Sans", sans-serif;
   overflow: hidden;
 }
+
+.toolbar-btn {
+  border: 1px solid #1a1f2e;
+  background: #0e1118;
+  color: #64748b;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+  font-family: "DM Sans", sans-serif;
+}
+.toolbar-btn:hover {
+  background: #131720;
+  color: #e2e8f0;
+  border-color: #2d3548;
+}
+.toolbar-btn.primary {
+  background: rgba(192, 132, 252, 0.15);
+  border-color: rgba(192, 132, 252, 0.3);
+  color: #c084fc;
+}
+.toolbar-btn.primary:hover {
+  background: rgba(192, 132, 252, 0.25);
+}
