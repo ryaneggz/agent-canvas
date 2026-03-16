@@ -166,3 +166,20 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - CWD label goes outside the session info wrapper as a separate flex item with flexShrink: 0
   - Terminal body is still a placeholder — full line rendering is US-013
 ---
+
+## 2026-03-15 23:57 - US-013
+- Replaced terminal body placeholder with full line rendering
+- Each line renders with icon column (lineIcon) and text column, styled per line type
+- stdin: purple accent color, fontWeight 500
+- stdout: default text color
+- stderr: red left-border (2px) + tinted red background
+- system: italic, dimmed color
+- Active sessions show pulsing purple dot (uses pulse animation from global.css) with "Working..." text
+- Auto-scrolls to bottom on mount/line changes via useRef + useEffect
+- Files changed: src/components/SessionPanel.tsx
+- **Learnings for future iterations:**
+  - Terminal body uses JetBrains Mono at 12.5px with lineHeight 1.6
+  - The pulse animation must exist in global.css for the active session indicator to work (added in US-017)
+  - lineColor and lineIcon utilities handle all per-type styling — just pass line.t
+  - Spread syntax with conditional objects `...(condition ? {styles} : {})` keeps inline styles clean
+---
