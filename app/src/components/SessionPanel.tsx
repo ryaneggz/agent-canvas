@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import type { PanelState } from '../types';
 import { T } from '../theme';
-import { statusColor, shellBadge } from '../utils/lineFormatting';
+import { lineColor, lineIcon, statusColor, shellBadge } from '../utils/lineFormatting';
 
 interface SessionPanelProps {
   panel: PanelState;
@@ -21,6 +21,13 @@ export default function SessionPanel({
   onBringToFront,
 }: SessionPanelProps) {
   const { id, session, x, y, w, h, z } = panel;
+  const termRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (termRef.current) {
+      termRef.current.scrollTop = termRef.current.scrollHeight;
+    }
+  }, [session.lines]);
 
   return (
     <div
@@ -170,11 +177,74 @@ export default function SessionPanel({
         </span>
       </div>
 
-      {/* Terminal body placeholder */}
-      <div style={{ flex: 1, padding: '8px 12px', overflowY: 'auto' }}>
-        <span style={{ fontSize: 12, color: T.textDim, fontFamily: "'JetBrains Mono', monospace" }}>
-          {session.name} — {session.shell}
-        </span>
+      {/* Terminal body */}
+      <div
+        ref={termRef}
+        style={{
+          flex: 1,
+          padding: '8px 0',
+          overflowY: 'auto',
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: '12.5px',
+          lineHeight: 1.6,
+        }}
+      >
+        {session.lines.map((line, i) => (
+          <div
+            key={i}
+            style={{
+              display: 'flex',
+              padding: '1px 12px',
+              ...(line.t === 'stderr'
+                ? {
+                    borderLeft: `2px solid ${T.red}`,
+                    background: 'rgba(248,113,113,0.06)',
+                  }
+                : {}),
+            }}
+          >
+            <span
+              style={{
+                width: 18,
+                flexShrink: 0,
+                color: lineColor(line.t),
+                opacity: 0.5,
+              }}
+            >
+              {lineIcon(line.t)}
+            </span>
+            <span
+              style={{
+                color: lineColor(line.t),
+                ...(line.t === 'stdin' ? { fontWeight: 500 } : {}),
+                ...(line.t === 'system' ? { fontStyle: 'italic' } : {}),
+              }}
+            >
+              {line.v}
+            </span>
+          </div>
+        ))}
+        {session.status === 'active' && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '4px 12px',
+            }}
+          >
+            <span
+              style={{
+                fontSize: 8,
+                color: T.accent,
+                animation: 'pulse 1.5s ease-in-out infinite',
+              }}
+            >
+              ●
+            </span>
+            <span style={{ fontSize: 11, color: T.textDim }}>Working...</span>
+          </div>
+        )}
       </div>
 
       {/* Resize handle */}
