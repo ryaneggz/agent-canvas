@@ -111,3 +111,18 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - The smoke test checks for rendered panel content — update if rendering changes
   - Terminal body and full line rendering are placeholders — full implementation in US-012/US-013
 ---
+
+## 2026-03-15 23:47 - US-009
+- Verified all 5 panel actions already implemented in useCanvasInteractions hook (from US-007/US-008)
+- bringToFront: increments maxZ ref, updates panel z, sets activeId — wired to SessionPanel onBringToFront
+- closePanel: filters panel array, clears activeId if match — wired to red traffic light onClick
+- tilePanels: grid layout with cols=ceil(sqrt(n)), tileW=500, tileH=360, gap=20 — wired to Toolbar onTile
+- spawnSession: creates panel with uid(), random position offset by canvasOffset, 2 initial lines, closes spawner — wired to SpawnerModal onSpawn
+- resetView: sets canvasOffset to (0,0) and zoom to 1 — wired to Toolbar onResetView
+- All quality checks pass: typecheck, lint, test
+- Files changed: .ralph/prd.json (mark US-009 passes: true)
+- **Learnings for future iterations:**
+  - US-009 actions were already fully implemented in the hook during US-007 — this story was essentially a verification pass
+  - All actions are wired through Canvas.tsx to child components via props
+  - Toolbar and SpawnerModal are still stubs — they accept props but render empty divs until their own stories (US-011, US-015)
+---
