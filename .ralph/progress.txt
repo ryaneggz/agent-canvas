@@ -40,3 +40,14 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - The spec says "20 keys" but actually lists 19 — follow the actual key list, not the count
   - All colors reference T object directly via inline styles — no CSS variables allowed
 ---
+
+## 2026-03-15 23:34 - US-004
+- Implemented all TypeScript interfaces and type aliases in types.ts
+- Exports: LineType, SessionLine, SessionStatus, ShellType, Session, PanelState, DragState, ResizeState, PanState, SpawnerTemplate, ShellBadgeStyle
+- All types match spec exactly (SessionLine uses {t, v} shorthand)
+- Files changed: src/types.ts
+- **Learnings for future iterations:**
+  - types.ts was a stub (`export {}`) from the scaffold — replaced entirely
+  - Previous iteration left uncommitted changes in working tree; prd.json was also reverted — always verify committed vs working state
+  - All type definitions are in a single file for easy import across modules
+---
