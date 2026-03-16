@@ -111,4 +111,63 @@ describe('SessionPanel', () => {
       expect(panel.style.border).toContain('rgb(26, 31, 46)');
     });
   });
+
+  describe('Terminal output rendering (US-013)', () => {
+    it('renders all session lines', () => {
+      renderPanel();
+      // Each line is a flex div inside terminal body; mock has 4 lines
+      expect(screen.getByText('Session started')).toBeInTheDocument();
+      expect(screen.getByText('npm start')).toBeInTheDocument();
+      expect(screen.getByText('Server running on port 3000')).toBeInTheDocument();
+      expect(screen.getByText('Warning: deprecated API')).toBeInTheDocument();
+    });
+
+    it('terminal body renders expected line count', () => {
+      const { container } = renderPanel();
+      // 4 lines + 1 "Working..." row for active session = 5 child divs in terminal body
+      // Terminal body is the second child of the panel (after title bar)
+      const panel = container.firstElementChild as HTMLElement;
+      const terminalBody = panel.children[1] as HTMLElement;
+      // 4 line divs + 1 working indicator div
+      expect(terminalBody.children).toHaveLength(5);
+    });
+
+    it('each line shows correct icon character', () => {
+      renderPanel();
+      // system → ·, stdin → $, stdout → │, stderr → !
+      expect(screen.getByText('·')).toBeInTheDocument();
+      expect(screen.getByText('$')).toBeInTheDocument();
+      expect(screen.getByText('│')).toBeInTheDocument();
+      expect(screen.getByText('!')).toBeInTheDocument();
+    });
+
+    it('stdin lines have purple accent color', () => {
+      renderPanel();
+      // Find the stdin line text "npm start"
+      const stdinText = screen.getByText('npm start');
+      // jsdom converts #c084fc to rgb(192, 132, 252)
+      expect(stdinText.style.color).toContain('rgb(192, 132, 252)');
+      expect(stdinText.style.fontWeight).toBe('500');
+    });
+
+    it('stderr lines render with red styling', () => {
+      renderPanel();
+      const stderrText = screen.getByText('Warning: deprecated API');
+      // stderr text should be present
+      expect(stderrText).toBeInTheDocument();
+      // The parent line div should have a red left border
+      const lineDiv = stderrText.parentElement as HTMLElement;
+      expect(lineDiv.style.borderLeft).toContain('rgb(248, 113, 113)');
+    });
+
+    it('active session shows Working... text', () => {
+      renderPanel({ panel: { ...mockPanel, session: { ...mockPanel.session, status: 'active' } } });
+      expect(screen.getByText('Working...')).toBeInTheDocument();
+    });
+
+    it('idle session does not show Working... text', () => {
+      renderPanel({ panel: { ...mockPanel, session: { ...mockPanel.session, status: 'idle' } } });
+      expect(screen.queryByText('Working...')).not.toBeInTheDocument();
+    });
+  });
 });
