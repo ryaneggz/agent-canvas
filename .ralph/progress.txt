@@ -378,3 +378,16 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - onResizeStart is called with (id, event) — use `expect.any(Object)` for the event arg
   - SVG is nested inside the resize handle div — query with `.querySelector('svg')`
 ---
+
+## 2026-03-16 00:46 - US-015
+- Wrote 10 TDD tests for SpawnerModal: heading, subtext, 4 template cards, shell badges, template labels/descriptions, onSpawn callback, backdrop onClose, stopPropagation on modal card
+- Implemented full SpawnerModal component: backdrop with T.overlay, modal card with fadeIn, 4 template cards with staggered slideUp, shell badges via shellBadge()
+- Added .spawner-option and .spawner-option:hover CSS classes to global.css
+- Files changed: src/__tests__/SpawnerModal.test.tsx (new), src/components/SpawnerModal.tsx, src/styles/global.css
+- **Learnings for future iterations:**
+  - SpawnerModal imports SPAWNER_TEMPLATES directly — it doesn't receive templates via props
+  - Backdrop onClick calls onClose; modal card uses e.stopPropagation() to prevent bubble
+  - .spawner-option CSS class uses hardcoded hex matching T tokens (same pattern as .toolbar-btn)
+  - Shell badges appear 3x bash + 1x zsh across the 4 templates — useful for assertion counts
+  - Remove unused type imports to avoid lint errors (SpawnerTemplate not needed in tests)
+---
