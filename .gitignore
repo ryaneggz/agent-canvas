@@ -18,4 +18,4 @@ progress.txt
 # Defensive patterns
 **/node_modules/
 **/.next/
-.claude/plans/
+# .claude/plans/
