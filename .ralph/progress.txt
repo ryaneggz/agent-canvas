@@ -233,3 +233,14 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Test pattern: describe block for object, nested describe for values, one it() per key/value assertion
   - Use `Object.keys(T).sort()` for order-independent key comparison
 ---
+
+## 2026-03-16 00:25 - US-004
+- Verified all TypeScript interfaces and type aliases already implemented in types.ts
+- Exports: LineType, SessionLine, SessionStatus, ShellType, Session, PanelState, DragState, ResizeState, PanState, SpawnerTemplate, ShellBadgeStyle
+- All types match spec exactly
+- Quality gate: typecheck, lint, test all pass (23 tests)
+- Files changed: .ralph/prd.json (mark US-004 passes: true)
+- **Learnings for future iterations:**
+  - types.ts was already implemented from pre-TDD-reset iterations — only needed verification
+  - No TDD criteria for this story, so no test file needed
+---
