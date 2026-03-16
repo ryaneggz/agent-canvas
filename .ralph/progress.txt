@@ -326,3 +326,16 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - Zoom-layer transform contains "scale", pan-layer contains "translate" — assert with toContain
   - Test session panel presence by checking for session name text (api-server, git-workflow, etc.)
 ---
+
+## 2026-03-16 00:36 - US-011
+- Wrote TDD tests for Toolbar component in src/__tests__/Toolbar.test.tsx
+- Tests verify: Agent Canvas logo text, >_ icon, 3 buttons (+ New Session, Tile, Reset View), status text with session count and zoom %, click handlers
+- Implementation already existed from prior iteration — all 10 new tests passed immediately (122 total)
+- Quality gate: typecheck, lint, test all pass
+- Files changed: src/__tests__/Toolbar.test.tsx (new)
+- **Learnings for future iterations:**
+  - Toolbar props: panelCount, zoom, onNewSession, onTile, onResetView
+  - Status text format: "{N} session(s) · {zoom}%" — use Math.round(zoom * 100)
+  - Tile and Reset View buttons have emoji prefixes (⊞, ⌂) — use regex matchers (/Tile/, /Reset View/) in tests
+  - Use vi.fn() for handler props and assert toHaveBeenCalledTimes(1) after fireEvent.click
+---
