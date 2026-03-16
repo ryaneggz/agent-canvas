@@ -353,3 +353,16 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - onClose is called with panel id, not event — assert `toHaveBeenCalledWith('panel-id')`
   - Remove unused imports (e.g., T) to avoid lint errors — tests use rgb strings directly
 ---
+
+## 2026-03-16 00:42 - US-013
+- Extended src/__tests__/SessionPanel.test.tsx with 7 new TDD tests for terminal output rendering
+- Tests verify: all session lines render, correct line count in terminal body, correct icon characters (·, $, │, !), stdin purple accent color + fontWeight 500, stderr red left-border styling, active session shows "Working..." text, idle session hides "Working..." text
+- Implementation already existed from prior iteration — all 138 tests pass (7 new + 131 existing)
+- Quality gate: typecheck, lint, test all pass
+- Files changed: src/__tests__/SessionPanel.test.tsx
+- **Learnings for future iterations:**
+  - Don't destructure `{ container }` from renderPanel() if only using `screen` queries — lint will flag unused vars
+  - Access terminal body as `panel.children[1]` (children[0] is title bar)
+  - Active session has 4 line divs + 1 working indicator div = 5 children in terminal body
+  - stdinText.style.color in jsdom returns rgb format — use `rgb(192, 132, 252)` for T.accent (#c084fc)
+---
