@@ -94,7 +94,7 @@
         "Verify in browser using agent-browser skill"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

@@ -96,9 +96,18 @@ If ALL stories are complete and passing, reply with:
 
 If there are still stories with `passes: false`, end your response normally (another iteration will pick up the next story).
 
+## Context Window Management
+
+Each iteration runs in a fresh context window with no memory of previous iterations. To stay in the "smart zone" and avoid degraded output from context exhaustion:
+
+- **1 story = 1 iteration.** Never attempt multiple stories in a single iteration.
+- **Stop after committing.** Once you commit, update prd.json, and append to progress.txt — you are done. Do not continue to the next story.
+- **Minimize reads.** Only read files directly relevant to the current story. Use progress.txt Codebase Patterns as a shortcut instead of re-exploring the entire codebase.
+- **Keep diffs small.** If a story requires touching more than ~5 files, it may be too big — note this in progress.txt so the PRD can be split in the future.
+
 ## Important
 
-- Work on ONE story per iteration
+- Work on ONE story per iteration — this is a hard rule, not a suggestion
 - Commit frequently
 - Keep CI green
 - Read the Codebase Patterns section in progress.txt before starting

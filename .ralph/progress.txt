@@ -63,3 +63,15 @@ Started: Sun Mar 15 23:25:31 MDT 2026
   - shellBadge bg values use raw rgba strings, not T token references (spec-specific values)
   - Switch statements on union types provide exhaustiveness checking without a default case
 ---
+
+## 2026-03-15 23:40 - US-006
+- Implemented `MOCK_SESSIONS` (4 sessions) and `SPAWNER_TEMPLATES` (4 templates) in mockSessions.ts
+- api-server: bash/active/8 lines, git-workflow: zsh/active/8 lines, docker-build: bash/idle/6 lines, test-runner: bash/error/5 lines
+- All line types, statuses, shell types, and content match spec exactly
+- Files changed: src/data/mockSessions.ts
+- **Learnings for future iterations:**
+  - mockSessions.ts was a stub (`export {}`) — replaced entirely
+  - Multi-line stdout in the spec (e.g., docker build output) should be combined into a single SessionLine with `\n` to match line counts
+  - The "On mount, 4 panels" criterion belongs to the hook (US-007), not this data story
+  - Mock data imports types from `../types` — keep type imports consistent
+---
