@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { useCanvasInteractions } from '@/hooks/useCanvasInteractions';
+import type { SpawnerTemplate } from '@/types';
 
 describe('useCanvasInteractions', () => {
   describe('initial state', () => {
@@ -276,6 +277,257 @@ describe('useCanvasInteractions', () => {
       });
       const panel = result.current.panels.find(p => p.id === panelId);
       expect(panel!.z).toBeGreaterThan(initialMaxZ);
+    });
+  });
+
+  describe('bringToFront — panel z-index and activeId', () => {
+    it('updates the panel z-index to be the highest', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const panelId = result.current.panels[0].id;
+      const maxZBefore = Math.max(...result.current.panels.map(p => p.z));
+      act(() => {
+        result.current.bringToFront(panelId);
+      });
+      const panel = result.current.panels.find(p => p.id === panelId);
+      expect(panel!.z).toBeGreaterThan(maxZBefore);
+    });
+
+    it('sets activeId to the brought-to-front panel', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const panelId = result.current.panels[2].id;
+      act(() => {
+        result.current.bringToFront(panelId);
+      });
+      expect(result.current.activeId).toBe(panelId);
+    });
+
+    it('updates activeId when a different panel is brought to front', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const firstId = result.current.panels[0].id;
+      const secondId = result.current.panels[1].id;
+      act(() => {
+        result.current.bringToFront(firstId);
+      });
+      expect(result.current.activeId).toBe(firstId);
+      act(() => {
+        result.current.bringToFront(secondId);
+      });
+      expect(result.current.activeId).toBe(secondId);
+    });
+  });
+
+  describe('closePanel — panel removal', () => {
+    it('removes the panel from the panels array', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const panelId = result.current.panels[0].id;
+      act(() => {
+        result.current.closePanel(panelId);
+      });
+      expect(result.current.panels).toHaveLength(3);
+      expect(result.current.panels.find(p => p.id === panelId)).toBeUndefined();
+    });
+
+    it('clears activeId if the closed panel was active', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const panelId = result.current.panels[0].id;
+      act(() => {
+        result.current.bringToFront(panelId);
+      });
+      expect(result.current.activeId).toBe(panelId);
+      act(() => {
+        result.current.closePanel(panelId);
+      });
+      expect(result.current.activeId).toBeNull();
+    });
+
+    it('does not clear activeId if a different panel was closed', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const activePanel = result.current.panels[0].id;
+      const otherPanel = result.current.panels[1].id;
+      act(() => {
+        result.current.bringToFront(activePanel);
+      });
+      act(() => {
+        result.current.closePanel(otherPanel);
+      });
+      expect(result.current.activeId).toBe(activePanel);
+    });
+
+    it('is idempotent — closing a non-existent panel does nothing', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const lengthBefore = result.current.panels.length;
+      act(() => {
+        result.current.closePanel('non-existent-id');
+      });
+      expect(result.current.panels).toHaveLength(lengthBefore);
+    });
+  });
+
+  describe('tilePanels — grid arrangement', () => {
+    it('arranges panels in a grid layout', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      act(() => {
+        result.current.tilePanels();
+      });
+      // 4 panels → cols = ceil(sqrt(4)) = 2
+      const cols = 2;
+      const tileW = 500;
+      const tileH = 360;
+      const gap = 20;
+      result.current.panels.forEach((panel, i) => {
+        expect(panel.x).toBe((i % cols) * (tileW + gap) + 30);
+        expect(panel.y).toBe(Math.floor(i / cols) * (tileH + gap) + 30);
+        expect(panel.w).toBe(tileW);
+        expect(panel.h).toBe(tileH);
+      });
+    });
+
+    it('uses correct column count for different panel counts', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      // Close 2 panels to have 2 remaining → cols = ceil(sqrt(2)) = 2
+      const id0 = result.current.panels[0].id;
+      const id1 = result.current.panels[1].id;
+      act(() => {
+        result.current.closePanel(id0);
+        result.current.closePanel(id1);
+      });
+      expect(result.current.panels).toHaveLength(2);
+      act(() => {
+        result.current.tilePanels();
+      });
+      // With 2 panels and 2 cols, both should be in row 0
+      expect(result.current.panels[0].y).toBe(30);
+      expect(result.current.panels[1].y).toBe(30);
+    });
+  });
+
+  describe('spawnSession — new session creation', () => {
+    it('adds a new panel to the panels array', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const template: SpawnerTemplate = {
+        name: 'blank-bash',
+        shell: 'bash',
+        cwd: '~',
+        label: 'Blank (bash)',
+        desc: 'Empty bash shell session',
+      };
+      act(() => {
+        result.current.spawnSession(template);
+      });
+      expect(result.current.panels).toHaveLength(5);
+    });
+
+    it('creates a panel with 2 initial lines', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const template: SpawnerTemplate = {
+        name: 'blank-bash',
+        shell: 'bash',
+        cwd: '~',
+        label: 'Blank (bash)',
+        desc: 'Empty bash shell session',
+      };
+      act(() => {
+        result.current.spawnSession(template);
+      });
+      const newPanel = result.current.panels[result.current.panels.length - 1];
+      expect(newPanel.session.lines).toHaveLength(2);
+      expect(newPanel.session.lines[0].t).toBe('system');
+      expect(newPanel.session.lines[1].t).toBe('stdin');
+    });
+
+    it('closes the spawner modal after spawning', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      act(() => {
+        result.current.setShowSpawner(true);
+      });
+      expect(result.current.showSpawner).toBe(true);
+      const template: SpawnerTemplate = {
+        name: 'blank-bash',
+        shell: 'bash',
+        cwd: '~',
+        label: 'Blank (bash)',
+        desc: 'Empty bash shell session',
+      };
+      act(() => {
+        result.current.spawnSession(template);
+      });
+      expect(result.current.showSpawner).toBe(false);
+    });
+
+    it('sets the new panel as active', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const template: SpawnerTemplate = {
+        name: 'blank-zsh',
+        shell: 'zsh',
+        cwd: '~',
+        label: 'Blank (zsh)',
+        desc: 'Empty zsh shell session',
+      };
+      act(() => {
+        result.current.spawnSession(template);
+      });
+      const newPanel = result.current.panels[result.current.panels.length - 1];
+      expect(result.current.activeId).toBe(newPanel.id);
+    });
+
+    it('assigns the correct shell from the template', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const template: SpawnerTemplate = {
+        name: 'blank-zsh',
+        shell: 'zsh',
+        cwd: '~/projects',
+        label: 'Blank (zsh)',
+        desc: 'Empty zsh shell session',
+      };
+      act(() => {
+        result.current.spawnSession(template);
+      });
+      const newPanel = result.current.panels[result.current.panels.length - 1];
+      expect(newPanel.session.shell).toBe('zsh');
+      expect(newPanel.session.cwd).toBe('~/projects');
+    });
+  });
+
+  describe('resetView — viewport reset', () => {
+    it('resets canvasOffset to {x: 0, y: 0}', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      // Change zoom first to move offset indirectly
+      const makeWheelEvent = (overrides: Partial<React.WheelEvent> = {}) =>
+        ({
+          ctrlKey: true,
+          metaKey: false,
+          deltaY: -100,
+          preventDefault: vi.fn(),
+          ...overrides,
+        }) as unknown as React.WheelEvent;
+      act(() => {
+        result.current.handleWheel(makeWheelEvent());
+      });
+      expect(result.current.zoom).not.toBe(1);
+      act(() => {
+        result.current.resetView();
+      });
+      expect(result.current.canvasOffset).toEqual({ x: 0, y: 0 });
+    });
+
+    it('resets zoom to 1', () => {
+      const { result } = renderHook(() => useCanvasInteractions());
+      const makeWheelEvent = () =>
+        ({
+          ctrlKey: true,
+          metaKey: false,
+          deltaY: -100,
+          preventDefault: vi.fn(),
+        }) as unknown as React.WheelEvent;
+      act(() => {
+        result.current.handleWheel(makeWheelEvent());
+        result.current.handleWheel(makeWheelEvent());
+      });
+      expect(result.current.zoom).not.toBe(1);
+      act(() => {
+        result.current.resetView();
+      });
+      expect(result.current.zoom).toBe(1);
     });
   });
 
